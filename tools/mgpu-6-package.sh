@@ -23,7 +23,9 @@ cp "$SRC/PKGBUILD" "$SRC/aquamarine-mgpu-copy-engine.patch" "$BUILD/"
 echo "=== building (log: $LOG)"
 cd "$BUILD"
 # -s installs missing build deps (vulkan-headers), -i installs the result, -f overwrites
-if makepkg -sif --noconfirm 2>&1 | tee "$LOG" | tail -5; then
+# -s installs missing build deps, -f overwrites. NOT -i --noconfirm: replacing `aquamarine`
+# needs a conflict prompt answered with "y", and --noconfirm answers the default, which is "no".
+if makepkg -sf --noconfirm 2>&1 | tee "$LOG" | tail -5 && sudo pacman -U "$BUILD"/*.pkg.tar.zst && sudo ldconfig; then
   echo
   echo "=== installed:"
   pacman -Q aquamarine-mgpu aquamarine 2>&1 | sed 's/^/    /'
@@ -36,6 +38,8 @@ if makepkg -sif --noconfirm 2>&1 | tee "$LOG" | tail -5; then
   else
     echo "    copy-engine path: MISSING -- something went wrong, run ~/mgpu-3-restore.sh"
   fi
+  echo
+  echo "    libaquamarine.so.14 -> $(readlink -f /usr/lib/libaquamarine.so.14)"
   echo
   echo "Log out of Hyprland and back in for the new library to be used."
   echo "To go back to the distro package: sudo pacman -S aquamarine"

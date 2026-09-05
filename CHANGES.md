@@ -249,3 +249,23 @@ distro build exists in the patched build; `NEEDED` differs only by an explicit `
 * `tools/mgpu_e2e`: 60/60 (rebuilt against the new signature).
 * Exported-symbol check against the distro build: only `CDRMRenderer::blit`'s old mangled name
   disappears (internal header, and neither Hyprland nor hyprtoolkit references it).
+
+## 8. Two install traps found when deploying for real
+
+1. **A backup copy of a shared library must not live in a library directory.**
+   `mgpu-1-install-v2.sh` had been keeping the distro build at
+   `/usr/lib/libaquamarine.so.0.15.0.orig`. That file carries the same `SONAME`
+   (`libaquamarine.so.14`), so when anything triggers `ldconfig` — installing a package, a
+   reboot — the SONAME symlink can be repointed at the *backup*:
+   `/usr/lib/libaquamarine.so.14 -> libaquamarine.so.0.15.0.orig`. The session then silently runs
+   the unpatched library again, with the CPU readback path and all. Symptoms: high Hyprland CPU,
+   four ~15.6 MB anonymous mappings, `libnvidia-eglcore` + libc dominating the profile, and
+   `/proc/<pid>/maps` naming the `.orig` file. Fixed: the backup now lives in the project
+   directory, `mgpu-3-restore.sh` deletes any stray `.orig`, and both scripts run `ldconfig` and
+   print what `libaquamarine.so.14` resolves to. `~/mgpu-7-fix-install.sh` repairs a system that
+   already got into this state.
+2. **`makepkg -i --noconfirm` cannot replace a conflicting package.** `--noconfirm` answers the
+   "aquamarine-mgpu and aquamarine are in conflict. Remove aquamarine? [y/N]" prompt with its
+   default, which is *no*, so the transaction aborts and the package is built but never installed.
+   `mgpu-6-package.sh` now builds with `makepkg -sf --noconfirm` and installs with a plain
+   `sudo pacman -U`, so the prompt can actually be answered.

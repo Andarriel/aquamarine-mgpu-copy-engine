@@ -1,0 +1,16 @@
+installed lib: a1ffbf7bf1a7a7c3426fb146be132c76  /usr/lib/libaquamarine.so.0.15.0
+tty: /dev/tty3  XDG_RUNTIME_DIR=/run/user/1000  session: 7
+start: 17:54:27.942894878
+Hyprland pid 40768
+UP after 1s (instance efb50993780079460b0cbed1363e2166a2de1d9f_1788620068_812485021)
+--- top samples at +25s (idle-ish):
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+  40768 andarri+  -2   0 2110880 335304 155664 S   9.9   2.4   0:14.69 Hyprland
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+  40768 andarri+  -2   0 1586656 320892 141252 S  35.4   2.3   0:15.40 Hyprland
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+  40768 andarri+  -2   0 1587168 320892 141252 R  47.0   2.3   0:16.34 Hyprland
+16MB anon mapping: 7f851ce53000-7f851de5f000
+16MB anon mapping: 7f853c85a000-7f853d7fb000
+16MB anon mapping: 7f85565fe000-7f8557600000
+utime ticks 1512 stime ticks 123

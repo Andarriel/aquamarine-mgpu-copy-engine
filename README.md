@@ -95,8 +95,11 @@ aquamarine 0.15.0 · nvidia 610.57.04 · kernel 7.2.2 · CachyOS</sub>
 
 > [!WARNING]
 > This replaces a system library that your graphical session has mapped. Install it from a text
-> TTY, not from inside the Hyprland session whose library you are replacing. And never `cp` over a
-> shared library in place, it corrupts the running process. The tooling here does it correctly.
+> TTY, not from inside the Hyprland session whose library you are replacing. Never `cp` over a
+> shared library in place, it corrupts the running process. And never keep a backup copy of it
+> next to it: the backup carries the same `SONAME`, so the next `ldconfig` run can point
+> `libaquamarine.so.14` at your *backup* and silently undo the whole thing. Install the package
+> and let pacman own the file.
 
 ```bash
 git clone https://github.com/Andarriel/aquamarine-mgpu-copy-engine
