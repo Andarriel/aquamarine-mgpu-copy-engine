@@ -1,0 +1,22 @@
+installed lib: 741b5248211b8be531d9d96bb640d55f  /usr/lib/libaquamarine.so.0.15.0
+tty: /dev/tty4  XDG_RUNTIME_DIR=/run/user/1000  session: 9
+start: 16:06:33.377384371
+Hyprland pid 4262
+HUNG: no answer after 45s; state: S; wchan: __x64_sys_poll.cold
+--- threads:
+4262 Hyprland state=S wchan=__x64_sys_poll.cold
+4265 Hyprland state=S wchan=futex_wait
+4280 Hyprland state=S wchan=futex_wait
+4281 Hyprland state=S wchan=futex_wait
+4285 Hyprlan:disk$0 state=S wchan=futex_wait
+4286 Hyprland:sh0 state=S wchan=futex_wait
+4287 Hyprlan:disk$0 state=S wchan=futex_wait
+4288 Hyprland:sh0 state=S wchan=futex_wait
+4289 Hyprla:traceq0 state=S wchan=futex_wait
+4290 Hyprland:gdrv0 state=S wchan=futex_wait
+4294 pool-spawner state=S wchan=futex_wait
+4295 gmain state=S wchan=__x64_sys_ppoll.cold
+4296 dconf worker state=worker) wchan=__x64_sys_ppoll.cold
+4299 gdbus state=S wchan=__x64_sys_ppoll.cold
+utime ticks 15 stime ticks 20
+killed -9

@@ -1,0 +1,356 @@
+DEBUG ]: Old rlimit: soft -> 2048, hard -> 2097152
+DEBUG ]: New rlimit: soft -> 2097152, hard -> 2097152
+WARN ]: WARNING: Hyprland is being launched without start-hyprland. This is highly advised against.
+DEBUG ]: Creating the EventLoopManager!
+DEBUG ]: Creating the KeybindManager!
+DEBUG ]: Creating the AnimationManager!
+DEBUG ]: Creating the DynamicPermissionManager!
+DEBUG ]: Creating the MonitorState!
+DEBUG ]: Creating the WorkspaceState!
+DEBUG ]: Creating the ConfigManager!
+DEBUG ]: [cfg] Regular config at /home/andarriel/.config/hypr/hyprland.lua
+DEBUG ]: [cfg] Using lua config found at /home/andarriel/.config/hypr/hyprland.lua
+DEBUG ]: Creating the Error Overlay!
+DEBUG ]: Creating the LayoutManager!
+DEBUG ]: Creating the TokenManager!
+DEBUG ]: Creating the EventManager!
+DEBUG ]: Disabling stdout logs (debug.enable_stdout_logs = 0). Further logs will be written to /run/user/1000/hypr/efb50993780079460b0cbed1363e2166a2de1d9f_1788613593_1856864122/hyprland.log
+DEBUG ]: Creating the PointerManager!
+DEBUG ]: Creating the AsyncResourceGatherer!
+DEBUG from aquamarine ]: Creating an Aquamarine backend!
+DEBUG from aquamarine ]: [libseat] [libseat/backend/seatd.c:64] Could not connect to socket /run/seatd.sock: No such file or directory
+DEBUG from aquamarine ]: [libseat] [libseat/libseat.c:76] Backend 'seatd' failed to open seat, skipping
+DEBUG from aquamarine ]: [libseat] [libseat/libseat.c:73] Seat opened with backend 'logind'
+DEBUG from aquamarine ]: [libinput] event15 - HDA NVidia HDMI/DP,pcm=3: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event15 - not using input device '/dev/input/event15'
+DEBUG from aquamarine ]: [libinput] event16 - HDA NVidia HDMI/DP,pcm=7: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event16 - not using input device '/dev/input/event16'
+DEBUG from aquamarine ]: [libinput] event17 - HDA NVidia HDMI/DP,pcm=8: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event17 - not using input device '/dev/input/event17'
+DEBUG from aquamarine ]: [libinput] event18 - HDA NVidia HDMI/DP,pcm=9: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event18 - not using input device '/dev/input/event18'
+DEBUG from aquamarine ]: [libinput] event6  - Video Bus: is tagged by udev as: Keyboard
+DEBUG from aquamarine ]: [libinput] event6  - Video Bus: device is a keyboard
+DEBUG from aquamarine ]: [libinput] event4  - ITE Tech. Inc. ITE Device(8176) Keyboard: is tagged by udev as: Keyboard
+DEBUG from aquamarine ]: [libinput] event4  - ITE Tech. Inc. ITE Device(8176) Keyboard: device is a keyboard
+DEBUG from aquamarine ]: [libinput] event5  - ITE Tech. Inc. ITE Device(8176) Wireless Radio Control: is tagged by udev as: Keyboard
+DEBUG from aquamarine ]: [libinput] event5  - ITE Tech. Inc. ITE Device(8176) Wireless Radio Control: device is a keyboard
+DEBUG from aquamarine ]: [libinput] event10 - Logitech PRO X 2 LIGHTSPEED: not tagged as supported input device
+DEBUG from aquamarine ]: [libinput] event10 - not using input device '/dev/input/event10'
+DEBUG from aquamarine ]: [libinput] event8  - Logitech PRO X 2 LIGHTSPEED Consumer Control: is tagged by udev as: Keyboard
+DEBUG from aquamarine ]: [libinput] event8  - Logitech PRO X 2 LIGHTSPEED Consumer Control: device is a keyboard
+DEBUG from aquamarine ]: [libinput] event9  - Logitech PRO X 2 LIGHTSPEED: not tagged as supported input device
+DEBUG from aquamarine ]: [libinput] event9  - not using input device '/dev/input/event9'
+DEBUG from aquamarine ]: [libinput] event13 - ELAN06FA:00 04F3:327E Mouse: is tagged by udev as: Mouse
+DEBUG from aquamarine ]: [libinput] event13 - ELAN06FA:00 04F3:327E Mouse: device is a pointer
+DEBUG from aquamarine ]: [libinput] event14 - ELAN06FA:00 04F3:327E Touchpad: is tagged by udev as: Touchpad
+DEBUG from aquamarine ]: [libinput] event14 - thumb: enabled thumb detection (area)
+DEBUG from aquamarine ]: [libinput] event14 - ELAN06FA:00 04F3:327E Touchpad: device is a touchpad
+DEBUG from aquamarine ]: [libinput] event14 - palm: dwt activated with ELAN06FA:00 04F3:327E Touchpad<->ITE Tech. Inc. ITE Device(8176) Keyboard
+DEBUG from aquamarine ]: [libinput] event12 - Ideapad extra buttons: is tagged by udev as: Keyboard
+DEBUG from aquamarine ]: [libinput] event12 - Ideapad extra buttons: device is a keyboard
+DEBUG from aquamarine ]: [libinput] event0  - Lid Switch: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event0  - Lid Switch: device is a switch device
+DEBUG from aquamarine ]: [libinput] event0  - lid: keyboard paired with Lid Switch<->ITE Tech. Inc. ITE Device(8176) Keyboard
+DEBUG from aquamarine ]: [libinput] event14 - lid: activated for ELAN06FA:00 04F3:327E Touchpad<->Lid Switch
+DEBUG from aquamarine ]: [libinput] event19 - HDA Intel PCH Mic: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event19 - not using input device '/dev/input/event19'
+DEBUG from aquamarine ]: [libinput] event20 - HDA Intel PCH Headphone: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event20 - not using input device '/dev/input/event20'
+DEBUG from aquamarine ]: [libinput] event21 - HDA Intel PCH HDMI/DP,pcm=3: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event21 - not using input device '/dev/input/event21'
+DEBUG from aquamarine ]: [libinput] event22 - HDA Intel PCH HDMI/DP,pcm=7: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event22 - not using input device '/dev/input/event22'
+DEBUG from aquamarine ]: [libinput] event23 - HDA Intel PCH HDMI/DP,pcm=8: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event23 - not using input device '/dev/input/event23'
+DEBUG from aquamarine ]: [libinput] event24 - HDA Intel PCH HDMI/DP,pcm=9: is tagged by udev as: Switch
+DEBUG from aquamarine ]: [libinput] event24 - not using input device '/dev/input/event24'
+DEBUG from aquamarine ]: [libinput] event7  - Video Bus: is tagged by udev as: Keyboard
+DEBUG from aquamarine ]: [libinput] event7  - Video Bus: device is a keyboard
+DEBUG from aquamarine ]: [libinput] event2  - Power Button: is tagged by udev as: Keyboard
+DEBUG from aquamarine ]: [libinput] event2  - Power Button: device is a keyboard
+DEBUG from aquamarine ]: [libinput] event1  - Power Button: is tagged by udev as: Keyboard
+DEBUG from aquamarine ]: [libinput] event1  - Power Button: device is a keyboard
+DEBUG from aquamarine ]: [libinput] event3  - AT Translated Set 2 keyboard: is tagged by udev as: Keyboard
+DEBUG from aquamarine ]: [libinput] event3  - AT Translated Set 2 keyboard: device is a keyboard
+DEBUG from aquamarine ]: [libinput] event14 - palm: dwt activated with ELAN06FA:00 04F3:327E Touchpad<->AT Translated Set 2 keyboard
+DEBUG from aquamarine ]: [libinput] event0  - lid: keyboard paired with Lid Switch<->AT Translated Set 2 keyboard
+DEBUG from aquamarine ]: [libinput] event11 - PC Speaker: not tagged as supported input device
+DEBUG from aquamarine ]: [libinput] event11 - not using input device '/dev/input/event11'
+DEBUG from aquamarine ]: [libinput] event25 - X11mouse2 Keyboard: is tagged by udev as: Keyboard
+DEBUG from aquamarine ]: [libinput] event25 - X11mouse2 Keyboard: device is a keyboard
+DEBUG from aquamarine ]: [libinput] event26 - X11mouse2 Mouse: is tagged by udev as: Mouse
+DEBUG from aquamarine ]: [libinput] event26 - X11mouse2 Mouse: device is a pointer
+DEBUG from aquamarine ]: [libinput] event27 - X11mouse2: not tagged as supported input device
+DEBUG from aquamarine ]: [libinput] event27 - not using input device '/dev/input/event27'
+DEBUG from aquamarine ]: drm: Enumerated device /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1
+DEBUG from aquamarine ]: libseat: Device /dev/dri/card1 supports kms
+DEBUG from aquamarine ]: drm: Enumerated device /sys/devices/pci0000:00/0000:00:02.0/drm/card2
+DEBUG from aquamarine ]: libseat: Device /dev/dri/card2 supports kms
+DEBUG from aquamarine ]: drm: Explicit device list /dev/dri/nvidia-card:/dev/dri/intel-card
+DEBUG from aquamarine ]: drm: Explicit device /dev/dri/card1 found
+DEBUG from aquamarine ]: drm: Explicit device /dev/dri/card2 found
+DEBUG from aquamarine ]: drm: Found 2 GPUs
+DEBUG from aquamarine ]: drm: Starting backend for /dev/dri/card1, with driver nvidia-drm
+DEBUG from aquamarine ]: drm: Registered gpu /dev/dri/card1
+DEBUG from aquamarine ]: drm: Atomic supported, using atomic for modesetting
+DEBUG from aquamarine ]: drm: drmProps.supportsAsyncCommit: true
+DEBUG from aquamarine ]: drm: drmProps.supportsAddFb2Modifiers: true
+DEBUG from aquamarine ]: drm: drmProps.supportsTimelines: true
+DEBUG from aquamarine ]: drm: found 4 CRTCs
+DEBUG from aquamarine ]: drm: Plane 54 has type 1
+DEBUG from aquamarine ]: drm: Plane 54 has 23 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 194 has type 2
+DEBUG from aquamarine ]: drm: Plane 194 has 1 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 201 has type 0
+DEBUG from aquamarine ]: drm: Plane 201 has 23 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 246 has type 1
+DEBUG from aquamarine ]: drm: Plane 246 has 23 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 386 has type 2
+DEBUG from aquamarine ]: drm: Plane 386 has 1 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 393 has type 0
+DEBUG from aquamarine ]: drm: Plane 393 has 23 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 438 has type 1
+DEBUG from aquamarine ]: drm: Plane 438 has 23 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 578 has type 2
+DEBUG from aquamarine ]: drm: Plane 578 has 1 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 585 has type 0
+DEBUG from aquamarine ]: drm: Plane 585 has 23 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 630 has type 1
+DEBUG from aquamarine ]: drm: Plane 630 has 23 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 770 has type 2
+DEBUG from aquamarine ]: drm: Plane 770 has 1 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 777 has type 0
+DEBUG from aquamarine ]: drm: Plane 777 has 23 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Basic init pass for gpu /dev/dri/card1
+DEBUG from aquamarine ]: drm: Scanning connectors for /dev/dri/card1
+DEBUG from aquamarine ]: drm: Scanning connector id 823
+DEBUG from aquamarine ]: drm: Initializing connector id 823
+DEBUG from aquamarine ]: drm: Connector gets name DP-3
+ERR from aquamarine ]: drm: getCurrentCRTC: No CRTC 0
+DEBUG from aquamarine ]: drm: Connector 823 connection state: 2
+DEBUG from aquamarine ]: drm: Scanning connector id 827
+DEBUG from aquamarine ]: drm: Initializing connector id 827
+DEBUG from aquamarine ]: drm: Connector gets name DP-4
+ERR from aquamarine ]: drm: getCurrentCRTC: No CRTC 0
+DEBUG from aquamarine ]: drm: Connector 827 connection state: 2
+DEBUG from aquamarine ]: drm: Scanning connector id 831
+DEBUG from aquamarine ]: drm: Initializing connector id 831
+DEBUG from aquamarine ]: drm: Connector gets name HDMI-A-5
+ERR from aquamarine ]: drm: getCurrentCRTC: No CRTC 0
+DEBUG from aquamarine ]: drm: Connector 831 connection state: 2
+DEBUG from aquamarine ]: drm: Scanning connector id 834
+DEBUG from aquamarine ]: drm: Initializing connector id 834
+DEBUG from aquamarine ]: drm: Connector gets name eDP-2
+ERR from aquamarine ]: drm: getCurrentCRTC: No CRTC 0
+DEBUG from aquamarine ]: drm: Connector 834 connection state: 2
+DEBUG from aquamarine ]: drm: Rechecking CRTCs
+DEBUG from aquamarine ]: drm: connector DP-3, has crtc -1, will be rechecked
+DEBUG from aquamarine ]: drm: connector DP-4, has crtc -1, will be rechecked
+DEBUG from aquamarine ]: drm: connector HDMI-A-5, has crtc -1, will be rechecked
+DEBUG from aquamarine ]: drm: connector eDP-2, has crtc -1, will be rechecked
+DEBUG from aquamarine ]: drm: slot 0 crtc 200 unassigned
+DEBUG from aquamarine ]: drm: slot 1 crtc 392 unassigned
+DEBUG from aquamarine ]: drm: slot 2 crtc 584 unassigned
+DEBUG from aquamarine ]: drm: slot 3 crtc 776 unassigned
+DEBUG from aquamarine ]: drm: gpu /dev/dri/card1 becomes primary drm
+DEBUG from aquamarine ]: DRM Dumb: created a dumb allocator
+DEBUG from aquamarine ]: drm: Starting backend for /dev/dri/card2, with driver i915 with primary /dev/dri/card1
+DEBUG from aquamarine ]: drm: Registered gpu /dev/dri/card2
+DEBUG from aquamarine ]: drm: Atomic supported, using atomic for modesetting
+DEBUG from aquamarine ]: drm: drmProps.supportsAsyncCommit: true
+DEBUG from aquamarine ]: drm: drmProps.supportsAddFb2Modifiers: true
+DEBUG from aquamarine ]: drm: drmProps.supportsTimelines: true
+DEBUG from aquamarine ]: drm: found 4 CRTCs
+DEBUG from aquamarine ]: drm: Plane 35 has type 1
+DEBUG from aquamarine ]: drm: Plane 35 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 65 has type 0
+DEBUG from aquamarine ]: drm: Plane 65 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 95 has type 0
+DEBUG from aquamarine ]: drm: Plane 95 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 125 has type 0
+DEBUG from aquamarine ]: drm: Plane 125 has 19 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 135 has type 0
+DEBUG from aquamarine ]: drm: Plane 135 has 19 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 145 has type 2
+DEBUG from aquamarine ]: drm: Plane 145 has 1 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 153 has type 1
+DEBUG from aquamarine ]: drm: Plane 153 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 183 has type 0
+DEBUG from aquamarine ]: drm: Plane 183 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 213 has type 0
+DEBUG from aquamarine ]: drm: Plane 213 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 243 has type 0
+DEBUG from aquamarine ]: drm: Plane 243 has 19 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 253 has type 0
+DEBUG from aquamarine ]: drm: Plane 253 has 19 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 263 has type 2
+DEBUG from aquamarine ]: drm: Plane 263 has 1 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 271 has type 1
+DEBUG from aquamarine ]: drm: Plane 271 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 301 has type 0
+DEBUG from aquamarine ]: drm: Plane 301 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 331 has type 0
+DEBUG from aquamarine ]: drm: Plane 331 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 361 has type 0
+DEBUG from aquamarine ]: drm: Plane 361 has 19 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 371 has type 0
+DEBUG from aquamarine ]: drm: Plane 371 has 19 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 381 has type 2
+DEBUG from aquamarine ]: drm: Plane 381 has 1 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 389 has type 1
+DEBUG from aquamarine ]: drm: Plane 389 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 419 has type 0
+DEBUG from aquamarine ]: drm: Plane 419 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 449 has type 0
+DEBUG from aquamarine ]: drm: Plane 449 has 29 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 479 has type 0
+DEBUG from aquamarine ]: drm: Plane 479 has 19 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 489 has type 0
+DEBUG from aquamarine ]: drm: Plane 489 has 19 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Plane 499 has type 2
+DEBUG from aquamarine ]: drm: Plane 499 has 1 formats
+DEBUG from aquamarine ]: drm: Plane: checking for modifiers
+DEBUG from aquamarine ]: drm: Basic init pass for gpu /dev/dri/card2
+DEBUG from aquamarine ]: drm: Scanning connectors for /dev/dri/card2
+DEBUG from aquamarine ]: drm: Scanning connector id 508
+DEBUG from aquamarine ]: drm: Initializing connector id 508
+DEBUG from aquamarine ]: drm: Connector gets name eDP-1
+DEBUG from aquamarine ]: drm: Connector 508 connection state: 1
+DEBUG from aquamarine ]: drm: Scanning connector id 517
+DEBUG from aquamarine ]: drm: Initializing connector id 517
+DEBUG from aquamarine ]: drm: Connector gets name HDMI-A-1
+ERR from aquamarine ]: drm: getCurrentCRTC: No CRTC 0
+DEBUG from aquamarine ]: drm: Connector 517 connection state: 2
+DEBUG from aquamarine ]: drm: Scanning connector id 526
+DEBUG from aquamarine ]: drm: Initializing connector id 526
+DEBUG from aquamarine ]: drm: Connector gets name DP-1
+ERR from aquamarine ]: drm: getCurrentCRTC: No CRTC 0
+DEBUG from aquamarine ]: drm: Connector 526 connection state: 2
+DEBUG from aquamarine ]: drm: Scanning connector id 535
+DEBUG from aquamarine ]: drm: Initializing connector id 535
+DEBUG from aquamarine ]: drm: Connector gets name HDMI-A-2
+ERR from aquamarine ]: drm: getCurrentCRTC: No CRTC 0
+DEBUG from aquamarine ]: drm: Connector 535 connection state: 2
+DEBUG from aquamarine ]: drm: Scanning connector id 539
+DEBUG from aquamarine ]: drm: Initializing connector id 539
+DEBUG from aquamarine ]: drm: Connector gets name HDMI-A-3
+ERR from aquamarine ]: drm: getCurrentCRTC: No CRTC 0
+DEBUG from aquamarine ]: drm: Connector 539 connection state: 2
+DEBUG from aquamarine ]: drm: Scanning connector id 543
+DEBUG from aquamarine ]: drm: Initializing connector id 543
+DEBUG from aquamarine ]: drm: Connector gets name DP-2
+ERR from aquamarine ]: drm: getCurrentCRTC: No CRTC 0
+DEBUG from aquamarine ]: drm: Connector 543 connection state: 2
+DEBUG from aquamarine ]: drm: Scanning connector id 551
+DEBUG from aquamarine ]: drm: Initializing connector id 551
+DEBUG from aquamarine ]: drm: Connector gets name HDMI-A-4
+ERR from aquamarine ]: drm: getCurrentCRTC: No CRTC 0
+DEBUG from aquamarine ]: drm: Connector 551 connection state: 2
+DEBUG from aquamarine ]: drm: Rechecking CRTCs
+DEBUG from aquamarine ]: drm: Skipping connector eDP-1, has crtc 151 and is connected
+DEBUG from aquamarine ]: drm: connector HDMI-A-1, has crtc -1, will be rechecked
+DEBUG from aquamarine ]: drm: connector DP-1, has crtc -1, will be rechecked
+DEBUG from aquamarine ]: drm: connector HDMI-A-2, has crtc -1, will be rechecked
+DEBUG from aquamarine ]: drm: connector HDMI-A-3, has crtc -1, will be rechecked
+DEBUG from aquamarine ]: drm: connector DP-2, has crtc -1, will be rechecked
+DEBUG from aquamarine ]: drm: connector HDMI-A-4, has crtc -1, will be rechecked
+DEBUG from aquamarine ]: drm: slot 0 crtc 151 taken by eDP-1, skipping
+DEBUG from aquamarine ]: drm: slot 1 crtc 269 unassigned
+DEBUG from aquamarine ]: drm: slot 2 crtc 387 unassigned
+DEBUG from aquamarine ]: drm: slot 3 crtc 505 unassigned
+DEBUG from aquamarine ]: drm: Connector eDP-1 connected
+DEBUG from aquamarine ]: drm: Connecting connector eDP-1, CRTC ID 151
+DEBUG from aquamarine ]: drm: Dumping detected modes:
+DEBUG from aquamarine ]: drm: Mode 0: 2560x1600@165.02Hz  (preferred)
+DEBUG from aquamarine ]: drm: Mode 1: 2560x1600@60.01Hz  (preferred)
+DEBUG from aquamarine ]: drm: Physical size [Vector2D: x: 340, y: 220] (mm)
+DEBUG from aquamarine ]: drm: Description California Institute of Technology 0x161D 0x00006001 (eDP-1)
+DEBUG from aquamarine ]: drm: connector eDP-1 crtc is capable of vrr: props.vrr_capable -> 515, crtc->props.vrr_enabled -> 25
+DEBUG from aquamarine ]: drm: Explicit sync supported
+DEBUG from aquamarine ]: drm: connector eDP-1 crtc supports CTM
+DEBUG from aquamarine ]: drm: connector eDP-1 crtc supports HDR (8)
+DEBUG from aquamarine ]: drm: connector eDP-1 crtc supports Colorspace (514)
+DEBUG from aquamarine ]: DRM Dumb: created a dumb allocator
+DEBUG from aquamarine ]: Starting the Aquamarine backend!
+DEBUG from aquamarine ]: Starting the Wayland backend!
+ERR from aquamarine ]: Wayland backend cannot start: wl_display_connect failed (is a wayland compositor running?)
+ERR from aquamarine ]: Requested backend (wayland) could not start, enabling fallbacks
+ERR from aquamarine ]: Implementation wayland failed, erasing.
+DEBUG from aquamarine ]: Created a GBM allocator with drm fd 40
+DEBUG from aquamarine ]: drm: Connectors size2 4
+DEBUG from aquamarine ]: Created a GBM allocator with drm fd 41
+DEBUG from aquamarine ]: Supported EGL client extensions: (16) EGL_EXT_platform_base EGL_EXT_device_base EGL_EXT_device_enumeration EGL_EXT_device_query EGL_KHR_client_get_all_proc_addresses EGL_EXT_client_extensions EGL_KHR_debug EGL_KHR_platform_x11 EGL_EXT_platform_x11 EGL_EXT_platform_device EGL_MESA_platform_surfaceless EGL_EXT_explicit_device EGL_KHR_platform_wayland EGL_EXT_platform_wayland EGL_KHR_platform_gbm EGL_MESA_platform_gbm EGL_EXT_platform_xcb
+DEBUG from aquamarine ]: CDRMRenderer(drm): Using device /dev/dri/card1
+DEBUG from aquamarine ]: CDRMRenderer: IMG_context_priority supported, requesting high
+DEBUG from aquamarine ]: CDRMRenderer: EXT_create_context_robustness supported, requesting lose on reset
+DEBUG from aquamarine ]: CDRMRenderer: Using KHR_context_flush_control
+DEBUG from aquamarine ]: CDRMRenderer: Got a high priority context
+DEBUG from aquamarine ]: Creating CDRMRenderer on gpu /dev/dri/renderD128
+DEBUG from aquamarine ]: Using: OpenGL ES 3.2 NVIDIA 610.57.04
+DEBUG from aquamarine ]: Vendor: NVIDIA Corporation
+DEBUG from aquamarine ]: Renderer: NVIDIA GeForce RTX 4060 Laptop GPU/PCIe/SSE2
+DEBUG from aquamarine ]: Supported context extensions: (220) GL_EXT_shader_clock GL_EXT_shader_realtime_clock GL_EXT_base_instance GL_EXT_blend_func_extended GL_EXT_blend_minmax GL_EXT_buffer_storage GL_EXT_clear_texture GL_EXT_clip_control GL_EXT_clip_cull_distance GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_conservative_depth GL_EXT_copy_image GL_EXT_depth_clamp GL_EXT_debug_label GL_EXT_discard_framebuffer GL_EXT_disjoint_timer_query GL_EXT_draw_buffers_indexed GL_EXT_draw_elements_base_vertex GL_EXT_EGL_image_array GL_EXT_EGL_image_storage GL_EXT_EGL_image_external_wrap_modes GL_EXT_float_blend GL_EXT_frag_depth GL_EXT_geometry_point_size GL_EXT_geometry_shader GL_EXT_gpu_shader5 GL_EXT_map_buffer_range GL_EXT_multi_draw_indirect GL_EXT_multisample_compatibility GL_EXT_multisampled_render_to_texture GL_EXT_multisampled_render_to_texture2 GL_EXT_multiview_texture_multisample GL_EXT_multiview_timer_query GL_EXT_occlusion_query_boolean GL_EXT_polygon_offset_clamp GL_EXT_post_depth_coverage GL_EXT_primitive_bounding_box GL_EXT_raster_multisample GL_EXT_render_snorm GL_EXT_robustness GL_EXT_separate_shader_objects GL_EXT_shader_group_vote GL_EXT_shader_implicit_conversions GL_EXT_shader_integer_mix GL_EXT_shader_io_blocks GL_EXT_shader_non_constant_global_initializers GL_EXT_shader_texture_lod GL_EXT_shader_texture_samples GL_EXT_shadow_samplers GL_EXT_sparse_texture GL_EXT_sparse_texture2 GL_EXT_sRGB GL_EXT_sRGB_write_control GL_EXT_tessellation_point_size GL_EXT_tessellation_shader GL_EXT_texture_border_clamp GL_EXT_texture_buffer GL_EXT_texture_compression_bptc GL_EXT_texture_compression_dxt1 GL_EXT_texture_compression_rgtc GL_EXT_texture_compression_s3tc GL_EXT_texture_cube_map_array GL_EXT_texture_filter_anisotropic GL_EXT_texture_filter_minmax GL_EXT_texture_format_BGRA8888 GL_EXT_texture_mirror_clamp_to_edge GL_EXT_texture_norm16 GL_EXT_texture_query_lod GL_EXT_texture_rg GL_EXT_texture_shadow_lod GL_EXT_texture_sRGB_R8 GL_EXT_texture_sRGB_decode GL_EXT_texture_storage GL_EXT_texture_view GL_EXT_draw_transform_feedback GL_EXT_unpack_subimage GL_EXT_window_rectangles GL_KHR_context_flush_control GL_KHR_debug GL_EXT_memory_object GL_EXT_memory_object_fd GL_NV_memory_object_sparse GL_KHR_parallel_shader_compile GL_KHR_no_error GL_KHR_robust_buffer_access_behavior GL_KHR_robustness GL_EXT_semaphore GL_EXT_semaphore_fd GL_NV_timeline_semaphore GL_KHR_shader_subgroup GL_KHR_texture_compression_astc_ldr GL_KHR_texture_compression_astc_sliced_3d GL_KHR_texture_compression_astc_hdr GL_NV_bgr GL_NV_bindless_texture GL_NV_blend_equation_advanced GL_NV_blend_equation_advanced_coherent GL_NVX_blend_equation_advanced_multi_draw_buffers GL_NV_blend_minmax_factor GL_NV_clip_space_w_scaling GL_NV_compute_shader_derivatives GL_NV_conditional_render GL_NV_conservative_raster GL_NV_conservative_raster_pre_snap_triangles GL_NV_copy_buffer GL_NV_copy_image GL_NV_draw_buffers GL_NV_draw_instanced GL_NV_draw_texture GL_NV_draw_vulkan_image GL_NV_EGL_stream_consumer_external GL_NV_explicit_attrib_location GL_NV_fbo_color_attachments GL_NV_fill_rectangle GL_NV_fragment_coverage_to_color GL_NV_fragment_shader_barycentric GL_NV_fragment_shader_interlock GL_NV_framebuffer_blit GL_NV_framebuffer_mixed_samples GL_NV_framebuffer_multisample GL_NV_generate_mipmap_sRGB GL_NV_geometry_shader_passthrough GL_NV_instanced_arrays GL_NV_internalformat_sample_query GL_NV_gpu_shader5 GL_NV_image_formats GL_NV_memory_attachment GL_NV_mesh_shader GL_NV_occlusion_query_samples GL_NV_non_square_matrices GL_NV_pack_subimage GL_NV_packed_float GL_NV_packed_float_linear GL_NV_path_rendering GL_NV_path_rendering_shared_edge GL_NV_pixel_buffer_object GL_NV_polygon_mode GL_NV_primitive_shading_rate GL_NV_read_buffer GL_NV_read_depth GL_NV_read_depth_stencil GL_NV_read_stencil GL_NV_representative_fragment_test GL_NV_sample_locations GL_NV_sample_mask_override_coverage GL_NV_scissor_exclusive GL_NV_shader_atomic_fp16_vector GL_NV_shader_noperspective_interpolation GL_NV_shader_subgroup_partitioned GL_NV_shader_texture_footprint GL_NV_shading_rate_image GL_NV_shadow_samplers_array GL_NV_shadow_samplers_cube GL_NV_sRGB_formats GL_NV_stereo_view_rendering GL_NV_texture_array GL_NV_texture_barrier GL_NV_texture_border_clamp GL_NV_texture_compression_latc GL_NV_texture_compression_s3tc GL_NV_texture_compression_s3tc_update GL_NV_texture_dirty_tile_map GL_NV_timer_query GL_NV_viewport_array GL_NV_viewport_array2 GL_NV_viewport_swizzle GL_KHR_blend_equation_advanced GL_KHR_blend_equation_advanced_coherent GL_OES_compressed_ETC1_RGB8_texture GL_EXT_compressed_ETC1_RGB8_sub_texture GL_OES_depth24 GL_OES_depth32 GL_OES_depth_texture GL_OES_depth_texture_cube_map GL_OES_copy_image GL_OES_draw_buffers_indexed GL_OES_draw_elements_base_vertex GL_OES_texture_border_clamp GL_OES_tessellation_point_size GL_OES_tessellation_shader GL_OES_texture_buffer GL_OES_geometry_point_size GL_OES_geometry_shader GL_OES_gpu_shader5 GL_OES_shader_io_blocks GL_OES_texture_view GL_OES_primitive_bounding_box GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_EGL_image_external_essl3 GL_OES_EGL_sync GL_OES_element_index_uint GL_OES_fbo_render_mipmap GL_OES_get_program_binary GL_OES_mapbuffer GL_OES_packed_depth_stencil GL_OES_rgb8_rgba8 GL_EXT_read_format_bgra GL_OES_sample_shading GL_OES_sample_variables GL_OES_shader_image_atomic GL_OES_shader_multisample_interpolation GL_OES_standard_derivatives GL_OES_surfaceless_context GL_OES_texture_cube_map_array GL_OES_texture_npot GL_OES_texture_float GL_OES_texture_float_linear GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_texture_stencil8 GL_OES_texture_storage_multisample_2d_array GL_OES_vertex_array_object GL_OES_vertex_half_float GL_OES_viewport_array GL_OVR_multiview GL_OVR_multiview2 GL_OVR_multiview_multisampled_render_to_texture GL_ANDROID_extension_pack_es31a 
+DEBUG from aquamarine ]: drm: onReady: connector 823
+DEBUG from aquamarine ]: drm: onReady: connector 827
+DEBUG from aquamarine ]: drm: onReady: connector 831
+DEBUG from aquamarine ]: drm: onReady: connector 834
+DEBUG from aquamarine ]: Supported EGL client extensions: (16) EGL_EXT_platform_base EGL_EXT_device_base EGL_EXT_device_enumeration EGL_EXT_device_query EGL_KHR_client_get_all_proc_addresses EGL_EXT_client_extensions EGL_KHR_debug EGL_KHR_platform_x11 EGL_EXT_platform_x11 EGL_EXT_platform_device EGL_MESA_platform_surfaceless EGL_EXT_explicit_device EGL_KHR_platform_wayland EGL_EXT_platform_wayland EGL_KHR_platform_gbm EGL_MESA_platform_gbm EGL_EXT_platform_xcb
+DEBUG from aquamarine ]: CDRMRenderer(drm): Using device /dev/dri/card1
+DEBUG from aquamarine ]: CDRMRenderer: IMG_context_priority supported, requesting high
+DEBUG from aquamarine ]: CDRMRenderer: EXT_create_context_robustness supported, requesting lose on reset
+DEBUG from aquamarine ]: CDRMRenderer: Using KHR_context_flush_control
+DEBUG from aquamarine ]: CDRMRenderer: Got a high priority context
+DEBUG from aquamarine ]: Creating CDRMRenderer on gpu /dev/dri/renderD128
+DEBUG from aquamarine ]: Using: OpenGL ES 3.2 NVIDIA 610.57.04
+DEBUG from aquamarine ]: Vendor: NVIDIA Corporation
+DEBUG from aquamarine ]: Renderer: NVIDIA GeForce RTX 4060 Laptop GPU/PCIe/SSE2
+DEBUG from aquamarine ]: Supported context extensions: (220) GL_EXT_shader_clock GL_EXT_shader_realtime_clock GL_EXT_base_instance GL_EXT_blend_func_extended GL_EXT_blend_minmax GL_EXT_buffer_storage GL_EXT_clear_texture GL_EXT_clip_control GL_EXT_clip_cull_distance GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_conservative_depth GL_EXT_copy_image GL_EXT_depth_clamp GL_EXT_debug_label GL_EXT_discard_framebuffer GL_EXT_disjoint_timer_query GL_EXT_draw_buffers_indexed GL_EXT_draw_elements_base_vertex GL_EXT_EGL_image_array GL_EXT_EGL_image_storage GL_EXT_EGL_image_external_wrap_modes GL_EXT_float_blend GL_EXT_frag_depth GL_EXT_geometry_point_size GL_EXT_geometry_shader GL_EXT_gpu_shader5 GL_EXT_map_buffer_range GL_EXT_multi_draw_indirect GL_EXT_multisample_compatibility GL_EXT_multisampled_render_to_texture GL_EXT_multisampled_render_to_texture2 GL_EXT_multiview_texture_multisample GL_EXT_multiview_timer_query GL_EXT_occlusion_query_boolean GL_EXT_polygon_offset_clamp GL_EXT_post_depth_coverage GL_EXT_primitive_bounding_box GL_EXT_raster_multisample GL_EXT_render_snorm GL_EXT_robustness GL_EXT_separate_shader_objects GL_EXT_shader_group_vote GL_EXT_shader_implicit_conversions GL_EXT_shader_integer_mix GL_EXT_shader_io_blocks GL_EXT_shader_non_constant_global_initializers GL_EXT_shader_texture_lod GL_EXT_shader_texture_samples GL_EXT_shadow_samplers GL_EXT_sparse_texture GL_EXT_sparse_texture2 GL_EXT_sRGB GL_EXT_sRGB_write_control GL_EXT_tessellation_point_size GL_EXT_tessellation_shader GL_EXT_texture_border_clamp GL_EXT_texture_buffer GL_EXT_texture_compression_bptc GL_EXT_texture_compression_dxt1 GL_EXT_texture_compression_rgtc GL_EXT_texture_compression_s3tc GL_EXT_texture_cube_map_array GL_EXT_texture_filter_anisotropic GL_EXT_texture_filter_minmax GL_EXT_texture_format_BGRA8888 GL_EXT_texture_mirror_clamp_to_edge GL_EXT_texture_norm16 GL_EXT_texture_query_lod GL_EXT_texture_rg GL_EXT_texture_shadow_lod GL_EXT_texture_sRGB_R8 GL_EXT_texture_sRGB_decode GL_EXT_texture_storage GL_EXT_texture_view GL_EXT_draw_transform_feedback GL_EXT_unpack_subimage GL_EXT_window_rectangles GL_KHR_context_flush_control GL_KHR_debug GL_EXT_memory_object GL_EXT_memory_object_fd GL_NV_memory_object_sparse GL_KHR_parallel_shader_compile GL_KHR_no_error GL_KHR_robust_buffer_access_behavior GL_KHR_robustness GL_EXT_semaphore GL_EXT_semaphore_fd GL_NV_timeline_semaphore GL_KHR_shader_subgroup GL_KHR_texture_compression_astc_ldr GL_KHR_texture_compression_astc_sliced_3d GL_KHR_texture_compression_astc_hdr GL_NV_bgr GL_NV_bindless_texture GL_NV_blend_equation_advanced GL_NV_blend_equation_advanced_coherent GL_NVX_blend_equation_advanced_multi_draw_buffers GL_NV_blend_minmax_factor GL_NV_clip_space_w_scaling GL_NV_compute_shader_derivatives GL_NV_conditional_render GL_NV_conservative_raster GL_NV_conservative_raster_pre_snap_triangles GL_NV_copy_buffer GL_NV_copy_image GL_NV_draw_buffers GL_NV_draw_instanced GL_NV_draw_texture GL_NV_draw_vulkan_image GL_NV_EGL_stream_consumer_external GL_NV_explicit_attrib_location GL_NV_fbo_color_attachments GL_NV_fill_rectangle GL_NV_fragment_coverage_to_color GL_NV_fragment_shader_barycentric GL_NV_fragment_shader_interlock GL_NV_framebuffer_blit GL_NV_framebuffer_mixed_samples GL_NV_framebuffer_multisample GL_NV_generate_mipmap_sRGB GL_NV_geometry_shader_passthrough GL_NV_instanced_arrays GL_NV_internalformat_sample_query GL_NV_gpu_shader5 GL_NV_image_formats GL_NV_memory_attachment GL_NV_mesh_shader GL_NV_occlusion_query_samples GL_NV_non_square_matrices GL_NV_pack_subimage GL_NV_packed_float GL_NV_packed_float_linear GL_NV_path_rendering GL_NV_path_rendering_shared_edge GL_NV_pixel_buffer_object GL_NV_polygon_mode GL_NV_primitive_shading_rate GL_NV_read_buffer GL_NV_read_depth GL_NV_read_depth_stencil GL_NV_read_stencil GL_NV_representative_fragment_test GL_NV_sample_locations GL_NV_sample_mask_override_coverage GL_NV_scissor_exclusive GL_NV_shader_atomic_fp16_vector GL_NV_shader_noperspective_interpolation GL_NV_shader_subgroup_partitioned GL_NV_shader_texture_footprint GL_NV_shading_rate_image GL_NV_shadow_samplers_array GL_NV_shadow_samplers_cube GL_NV_sRGB_formats GL_NV_stereo_view_rendering GL_NV_texture_array GL_NV_texture_barrier GL_NV_texture_border_clamp GL_NV_texture_compression_latc GL_NV_texture_compression_s3tc GL_NV_texture_compression_s3tc_update GL_NV_texture_dirty_tile_map GL_NV_timer_query GL_NV_viewport_array GL_NV_viewport_array2 GL_NV_viewport_swizzle GL_KHR_blend_equation_advanced GL_KHR_blend_equation_advanced_coherent GL_OES_compressed_ETC1_RGB8_texture GL_EXT_compressed_ETC1_RGB8_sub_texture GL_OES_depth24 GL_OES_depth32 GL_OES_depth_texture GL_OES_depth_texture_cube_map GL_OES_copy_image GL_OES_draw_buffers_indexed GL_OES_draw_elements_base_vertex GL_OES_texture_border_clamp GL_OES_tessellation_point_size GL_OES_tessellation_shader GL_OES_texture_buffer GL_OES_geometry_point_size GL_OES_geometry_shader GL_OES_gpu_shader5 GL_OES_shader_io_blocks GL_OES_texture_view GL_OES_primitive_bounding_box GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_EGL_image_external_essl3 GL_OES_EGL_sync GL_OES_element_index_uint GL_OES_fbo_render_mipmap GL_OES_get_program_binary GL_OES_mapbuffer GL_OES_packed_depth_stencil GL_OES_rgb8_rgba8 GL_EXT_read_format_bgra GL_OES_sample_shading GL_OES_sample_variables GL_OES_shader_image_atomic GL_OES_shader_multisample_interpolation GL_OES_standard_derivatives GL_OES_surfaceless_context GL_OES_texture_cube_map_array GL_OES_texture_npot GL_OES_texture_float GL_OES_texture_float_linear GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_texture_stencil8 GL_OES_texture_storage_multisample_2d_array GL_OES_vertex_array_object GL_OES_vertex_half_float GL_OES_viewport_array GL_OVR_multiview GL_OVR_multiview2 GL_OVR_multiview_multisampled_render_to_texture GL_ANDROID_extension_pack_es31a 
+DEBUG from aquamarine ]: drm: Connectors size2 7
+DEBUG from aquamarine ]: drm: onReady: connector 508
+DEBUG from aquamarine ]: drm: onReady: connector 508 has output name eDP-1
+DEBUG from aquamarine ]: Swapchain: Clearing
+DEBUG from aquamarine ]: drm: onReady: connector 517
+DEBUG from aquamarine ]: drm: onReady: connector 526
+DEBUG from aquamarine ]: drm: onReady: connector 535
+DEBUG from aquamarine ]: drm: onReady: connector 539
+DEBUG from aquamarine ]: drm: onReady: connector 543
+DEBUG from aquamarine ]: drm: onReady: connector 551
+DEBUG from aquamarine ]: drm: Initializing secondary renderer on /dev/dri/card2, has enabled outputs
+DEBUG from aquamarine ]: Created a GBM allocator with drm fd 66
+DEBUG from aquamarine ]: Supported EGL client extensions: (16) EGL_EXT_platform_base EGL_EXT_device_base EGL_EXT_device_enumeration EGL_EXT_device_query EGL_KHR_client_get_all_proc_addresses EGL_EXT_client_extensions EGL_KHR_debug EGL_KHR_platform_x11 EGL_EXT_platform_x11 EGL_EXT_platform_device EGL_MESA_platform_surfaceless EGL_EXT_explicit_device EGL_KHR_platform_wayland EGL_EXT_platform_wayland EGL_KHR_platform_gbm EGL_MESA_platform_gbm EGL_EXT_platform_xcb

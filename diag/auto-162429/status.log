@@ -1,0 +1,12 @@
+active vt: tty4, Hyprland pid 5613
+--- irq + utime over 10 s:
+irq before: nvidia=168768 i915=82125 
+irq after:  nvidia=187384 i915=84851 
+Hyprland user cpu: 317% kernel: 66%  (ticks per 10 s = percent)
+--- top:
+   5613 andarri+  -2   0 2479112 333300 226512 R  39.7   2.4   0:20.11 Hyprland
+   5613 andarri+  -2   0 2479112 333300 226512 R  44.5   2.4   0:21.00 Hyprland
+   5613 andarri+  -2   0 2479112 333300 226512 S  43.0   2.4   0:21.86 Hyprland
+active vt now: tty4
+samples=8787 lost=0
+active vt at end: tty4

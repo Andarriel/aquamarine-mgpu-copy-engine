@@ -1,0 +1,21 @@
+# upstream clones (recreate: see README "Rebuilding" / CHANGES.md)
+aquamarine/
+hyprland/
+# build outputs and downloaded deps
+build-aq/
+build/*.so*
+deps/
+# compiled tools (sources are tracked)
+tools/sampler
+tools/dmabuf_test
+tools/vk_test
+tools/mgpu_e2e
+tools/hypr_like
+tools/connect_trace.so
+# raw profiler samples (large); the symbolized profiles are tracked
+diag/**/samples*.txt
+diag/samples-*.txt
+diag/**/*.zst
+packaging/build/
+tools/mgpu_damage
+tools/*.so

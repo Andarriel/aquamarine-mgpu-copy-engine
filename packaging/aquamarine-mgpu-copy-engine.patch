@@ -1,0 +1,1477 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cc263b4..b3ca552 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -71,7 +71,17 @@ target_include_directories(
+   PRIVATE "./src" "./src/include" "./protocols" "${CMAKE_BINARY_DIR}")
+ set_target_properties(aquamarine PROPERTIES VERSION ${AQUAMARINE_VERSION}
+                                             SOVERSION 14)
+-target_link_libraries(aquamarine OpenGL::EGL OpenGL::OpenGL PkgConfig::deps Threads::Threads)
++target_link_libraries(aquamarine OpenGL::EGL OpenGL::OpenGL PkgConfig::deps Threads::Threads ${CMAKE_DL_LIBS})
++
++# Optional: Vulkan headers enable the multi-GPU copy engine path (libvulkan is dlopen'd at runtime)
++include(CheckIncludeFileCXX)
++check_include_file_cxx("vulkan/vulkan.h" AQ_HAS_VULKAN_HEADERS)
++if(AQ_HAS_VULKAN_HEADERS)
++  message(STATUS "Vulkan headers found: enabling the multi-GPU copy engine path")
++  target_compile_definitions(aquamarine PRIVATE AQUAMARINE_HAS_VULKAN)
++else()
++  message(STATUS "Vulkan headers not found: multi-GPU copy engine path disabled")
++endif()
+ 
+ check_include_file("sys/timerfd.h" HAS_TIMERFD)
+ pkg_check_modules(epoll IMPORTED_TARGET epoll-shim)
+diff --git a/src/allocator/GBM.cpp b/src/allocator/GBM.cpp
+index 6f596b7..d1afdc6 100644
+--- a/src/allocator/GBM.cpp
++++ b/src/allocator/GBM.cpp
+@@ -1,4 +1,5 @@
+ #include <algorithm>
++#include <cstdio>
+ #include <aquamarine/allocator/GBM.hpp>
+ #include <aquamarine/backend/Backend.hpp>
+ #include <aquamarine/backend/DRM.hpp>
+@@ -140,9 +141,54 @@ Aquamarine::CGBMBuffer::CGBMBuffer(const SAllocatorBufferParams& params, Hypruti
+         return;
+     }
+ 
++    // Multi-GPU with a Vulkan copy engine on the primary: the primary copies into the
++    // secondary's scanout buffer itself, so the secondary never has to import our memory.
++    // Pick a layout the primary can both render to (GL) and read with its copy engine (Vulkan).
++    std::vector<uint64_t> vkSourceModifiers;
++    if (MULTIGPU && swapchain->backendImpl->type() == AQ_BACKEND_DRM) {
++        auto impl = (CDRMBackend*)swapchain->backendImpl.get();
++        if (impl->rendererState.renderer) {
++            impl->rendererState.renderer->ensureVulkanCopier();
++            if (const auto& VK = impl->rendererState.renderer->vkCopier; VK && VK->healthy()) {
++                const auto IMPORTABLE = VK->importableModifiers(attrs.format, true);
++                for (auto const& f : impl->rendererState.renderer->formats) {
++                    if (f.drmFormat != attrs.format || f.external || f.modifier == DRM_FORMAT_MOD_INVALID)
++                        continue;
++                    if (std::ranges::find(IMPORTABLE, f.modifier) != IMPORTABLE.end() && std::ranges::find(vkSourceModifiers, f.modifier) == vkSourceModifiers.end())
++                        vkSourceModifiers.emplace_back(f.modifier);
++                }
++            }
++        }
++    }
++
++    // Secondary GPU allocating the scanout target of a multi-GPU blit: if the primary has a
++    // Vulkan copy engine, allocate linear so the primary can import and write it directly.
++    if (params.scanout && !CURSOR && !MULTIGPU && swapchain->backendImpl->type() == AQ_BACKEND_DRM) {
++        auto impl = (CDRMBackend*)swapchain->backendImpl.get();
++        if (const auto PRIMARY = impl->primary.lock(); PRIMARY && PRIMARY->rendererState.renderer) {
++            PRIMARY->rendererState.renderer->ensureVulkanCopier();
++            if (const auto& VK = PRIMARY->rendererState.renderer->vkCopier; VK && VK->healthy()) {
++                const auto DST_MODS  = VK->importableModifiers(attrs.format, false);
++                const bool LINEAR_OK = std::ranges::find(DST_MODS, DRM_FORMAT_MOD_LINEAR) != DST_MODS.end() &&
++                    std::ranges::find(explicitModifiers, DRM_FORMAT_MOD_LINEAR) != explicitModifiers.end();
++                if (LINEAR_OK) {
++                    allocator->backend->log(AQ_LOG_DEBUG, "GBM: Buffer is a multigpu blit target and the primary has a copy engine, forcing linear");
++                    explicitModifiers = {DRM_FORMAT_MOD_LINEAR};
++                }
++            }
++        }
++    }
++
+     static const auto forceLinearBlit = !envExplicitlyDisabled("AQ_FORCE_LINEAR_BLIT");
+     auto const        oldMods         = explicitModifiers; // used in FORCE_LINEAR_BLIT case.
+-    if (MULTIGPU && !forceLinearBlit) {
++    static const bool VK_DEBUG = envEnabled("AQ_MGPU_VK_DEBUG");
++    if (VK_DEBUG)
++        fprintf(stderr, "[aq-vk] GBM alloc: %dx%d fmt 0x%x scanout %d cursor %d multigpu %d -> %zu vk source mods, %zu explicit mods\n", (int)attrs.size.x, (int)attrs.size.y, attrs.format,
++                (int)params.scanout, (int)CURSOR, (int)MULTIGPU, vkSourceModifiers.size(), explicitModifiers.size());
++    if (MULTIGPU && !vkSourceModifiers.empty()) {
++        allocator->backend->log(AQ_LOG_DEBUG, std::format("GBM: Buffer is marked as multigpu and the primary has a copy engine, using {} copy-engine compatible modifiers", vkSourceModifiers.size()));
++        explicitModifiers = vkSourceModifiers;
++    } else if (MULTIGPU && !forceLinearBlit) {
+         // Try to use the linear format if available for cross-GPU compatibility.
+         // However, Nvidia doesn't support linear, so this is a best-effort basis.
+         for (auto const& f : FORMATS) {
+@@ -245,6 +291,8 @@ Aquamarine::CGBMBuffer::CGBMBuffer(const SAllocatorBufferParams& params, Hypruti
+     allocator->backend->log(AQ_LOG_DEBUG,
+                             std::format("GBM: Allocated a new buffer with size {} and format {} with modifier 0x{:x} : {}", attrs.size, fourccToName(attrs.format), attrs.modifier,
+                                         drmModifierToName(attrs.modifier)));
++    if (VK_DEBUG)
++        fprintf(stderr, "[aq-vk] GBM allocated modifier 0x%lx\n", (unsigned long)attrs.modifier);
+ 
+     if (params.scanout && !MULTIGPU && swapchain->backendImpl->type() == AQ_BACKEND_DRM) {
+         // clear the buffer using the DRM renderer to avoid uninitialized mem
+diff --git a/src/backend/drm/DRM.cpp b/src/backend/drm/DRM.cpp
+index 6618a26..7ae9674 100644
+--- a/src/backend/drm/DRM.cpp
++++ b/src/backend/drm/DRM.cpp
+@@ -25,6 +25,7 @@ extern "C" {
+ #include <libseat.h>
+ #include <libudev.h>
+ #include <xf86drm.h>
++#include <poll.h>
+ #include <xf86drmMode.h>
+ #include <libdisplay-info/cta.h>
+ #include <libdisplay-info/cvt.h>
+@@ -2419,8 +2420,9 @@ bool Aquamarine::CDRMOutput::prepareAsyncCommitData(const COutputState::CSnapsho
+         SP<CDRMRenderer> primaryRenderer;
+         if (backend->primary)
+             primaryRenderer = backend->primary->rendererState.renderer;
+-        const auto BLIT = backend->rendererState.renderer->blit(STATE.buffer, NEW_BUFFER, primaryRenderer,
+-                                                                (STATE.committed & COutputState::AQ_OUTPUT_STATE_EXPLICIT_IN_FENCE) ? STATE.explicitInFence : -1);
++        const auto DAMAGE = (STATE.committed & COutputState::AQ_OUTPUT_STATE_DAMAGE) ? &STATE.damage : nullptr;
++        const auto BLIT   = backend->rendererState.renderer->blit(STATE.buffer, NEW_BUFFER, primaryRenderer,
++                                                                  (STATE.committed & COutputState::AQ_OUTPUT_STATE_EXPLICIT_IN_FENCE) ? STATE.explicitInFence : -1, DAMAGE);
+         if (!BLIT.success) {
+             backend->log(AQ_LOG_ERROR, "drm: Asynchronous commit requires blit, but blitting failed");
+             return false;
+@@ -2609,6 +2611,7 @@ bool Aquamarine::CDRMOutput::commitState(bool onlyTest) {
+ 
+     // A commit that carries no new buffer has nothing to blit: STATE.buffer is the one we already copied
+     SP<CDRMFB> blittedFB;
++    bool       blitFenceRequired = false; // the blit fence must be attached to this commit
+     if (backend->shouldBlit() && !(COMMITTED & COutputState::eOutputStateProperties::AQ_OUTPUT_STATE_BUFFER)) {
+         const auto& LAST = connector->crtc->primary->back ? connector->crtc->primary->back : connector->crtc->primary->front;
+         if (LAST && !LAST->dead)
+@@ -2662,8 +2665,12 @@ bool Aquamarine::CDRMOutput::commitState(bool onlyTest) {
+             SP<Aquamarine::CDRMRenderer> primaryRenderer;
+             if (backend->primary)
+                 primaryRenderer = backend->primary->rendererState.renderer;
+-            auto blitResult = backend->rendererState.renderer->blit(
+-                STATE.buffer, NEWAQBUF, primaryRenderer, (COMMITTED & COutputState::eOutputStateProperties::AQ_OUTPUT_STATE_EXPLICIT_IN_FENCE) ? STATE.explicitInFence : -1);
++            // hand the frame's damage to the copy engine: it only copies what this particular
++            // scanout buffer is missing. The GL fallback ignores it and blits everything.
++            const auto DAMAGE = (COMMITTED & COutputState::eOutputStateProperties::AQ_OUTPUT_STATE_DAMAGE) ? &STATE.damage : nullptr;
++            auto blitResult   = backend->rendererState.renderer->blit(
++                STATE.buffer, NEWAQBUF, primaryRenderer, (COMMITTED & COutputState::eOutputStateProperties::AQ_OUTPUT_STATE_EXPLICIT_IN_FENCE) ? STATE.explicitInFence : -1,
++                DAMAGE);
+             if (!blitResult.success) {
+                 backend->backend->log(AQ_LOG_ERROR, "drm: Backend requires blit, but blit failed");
+                 return false;
+@@ -2672,7 +2679,20 @@ bool Aquamarine::CDRMOutput::commitState(bool onlyTest) {
+             // replace the explicit in fence if the blitting backend returned one, otherwise discard old. Passed fence from the client is wrong.
+             // if the commit doesn't have an explicit fence, don't use the one we created, just fallback to implicit
+             static auto NO_EXPLICIT = envEnabled("AQ_MGPU_NO_EXPLICIT");
+-            if (blitResult.syncFD.has_value() && !NO_EXPLICIT && (COMMITTED & COutputState::eOutputStateProperties::AQ_OUTPUT_STATE_EXPLICIT_IN_FENCE))
++            static auto VK_SYNC = envEnabled("AQ_MGPU_VK_SYNC");
++            if (blitResult.syncFD.has_value() && blitResult.explicitRequired) {
++                // the copy engine doesn't do implicit sync: either KMS waits on the fence, or we do.
++                // Never hand a fence to a blocking (modeset) commit: wait here instead, bounded.
++                if (supportsExplicit && !NO_EXPLICIT && !NEEDS_RECONFIG && !VK_SYNC) {
++                    data.outputState.explicitInFence = blitResult.syncFD.value();
++                    blitFenceRequired                = true;
++                } else {
++                    pollfd pfd = {.fd = blitResult.syncFD.value(), .events = POLLIN};
++                    if (poll(&pfd, 1, 200) <= 0)
++                        backend->backend->log(AQ_LOG_ERROR, "drm: mgpu copy fence did not signal within 200ms before a blocking commit");
++                    data.outputState.explicitInFence = -1;
++                }
++            } else if (blitResult.syncFD.has_value() && !NO_EXPLICIT && (COMMITTED & COutputState::eOutputStateProperties::AQ_OUTPUT_STATE_EXPLICIT_IN_FENCE))
+                 data.outputState.explicitInFence = blitResult.syncFD.value();
+             else
+                 data.outputState.explicitInFence = -1;
+@@ -2734,6 +2754,8 @@ bool Aquamarine::CDRMOutput::commitState(bool onlyTest) {
+     data.test      = onlyTest;
+     data.enabled   = STATE.enabled;
+     data.committed = COMMITTED;
++    if (blitFenceRequired)
++        data.committed |= COutputState::eOutputStateProperties::AQ_OUTPUT_STATE_EXPLICIT_IN_FENCE;
+     if (COMMITTED & COutputState::eOutputStateProperties::AQ_OUTPUT_STATE_DAMAGE)
+         data.damage = STATE.damage.copy();
+     if (MODE->modeInfo.has_value())
+@@ -2892,11 +2914,18 @@ bool Aquamarine::CDRMOutput::setCursor(SP<IBuffer> buffer, const Vector2D& hotsp
+             SP<Aquamarine::CDRMRenderer> primaryRenderer;
+             if (backend->primary)
+                 primaryRenderer = backend->primary->rendererState.renderer;
+-            if (!backend->rendererState.renderer->blit(buffer, NEWAQBUF, primaryRenderer).success) {
++            const auto BLIT = backend->rendererState.renderer->blit(buffer, NEWAQBUF, primaryRenderer);
++            if (!BLIT.success) {
+                 backend->backend->log(AQ_LOG_ERROR, "drm: Backend requires blit, but cursor blit failed");
+                 return false;
+             }
+ 
++            // the cursor commit doesn't carry a fence: if the copy engine did the blit, wait here (it's a few µs)
++            if (BLIT.explicitRequired && BLIT.syncFD.has_value()) {
++                pollfd pfd = {.fd = BLIT.syncFD.value(), .events = POLLIN};
++                poll(&pfd, 1, 100);
++            }
++
+             fb = CDRMFB::create(NEWAQBUF, backend, nullptr); // will return attachment if present
+         } else
+             fb = CDRMFB::create(buffer, backend, nullptr);
+diff --git a/src/backend/drm/Renderer.cpp b/src/backend/drm/Renderer.cpp
+index 66dc52a..b249d39 100644
+--- a/src/backend/drm/Renderer.cpp
++++ b/src/backend/drm/Renderer.cpp
+@@ -2,6 +2,7 @@
+ #include <xf86drm.h>
+ #include <xf86drmMode.h>
+ #include <algorithm>
++#include <cstdio>
+ #include <cstring>
+ #include <fcntl.h>
+ #include <unistd.h>
+@@ -933,19 +934,46 @@ void CDRMRenderer::clearBuffer(IBuffer* buf) {
+     proc.eglDestroyImageKHR(egl.display, rboImage);
+ }
+ 
+-CDRMRenderer::SBlitResult CDRMRenderer::blit(SP<IBuffer> from, SP<IBuffer> to, SP<CDRMRenderer> primaryRenderer, int waitFD) {
++void CDRMRenderer::ensureVulkanCopier() {
++    if (vkCopierAttempted)
++        return;
++    vkCopierAttempted = true;
++    vkCopier          = CVulkanCopier::attempt(backend.lock(), drmFD);
++}
++
++CDRMRenderer::SBlitResult CDRMRenderer::blit(SP<IBuffer> from, SP<IBuffer> to, SP<CDRMRenderer> primaryRenderer, int waitFD, const Hyprutils::Math::CRegion* damage) {
+     if (!from || !to) {
+         backend->log(AQ_LOG_ERROR, "EGL (blit): null source or destination buffer");
+         return {};
+     }
+ 
+-    CEglContextGuard eglContext(*this);
+-
+     if (from->dmabuf().size != to->dmabuf().size) {
+         backend->log(AQ_LOG_ERROR, "EGL (blit): buffer sizes mismatched");
+         return {};
+     }
+ 
++    // Fast path: let the primary GPU's copy engine write straight into our scanout buffer.
++    // Zero CPU involvement, and no need for us to be able to import the primary's memory.
++    static const bool VK_DEBUG = envEnabled("AQ_MGPU_VK_DEBUG");
++    if (primaryRenderer) {
++        primaryRenderer->ensureVulkanCopier();
++        if (VK_DEBUG)
++            fprintf(stderr, "[aq-vk] blit: copier %s, canCopy %d (src mod 0x%lx, dst mod 0x%lx)\n", primaryRenderer->vkCopier ? "present" : "absent",
++                    primaryRenderer->vkCopier ? (int)primaryRenderer->vkCopier->canCopy(from, to) : 0, (unsigned long)from->dmabuf().modifier, (unsigned long)to->dmabuf().modifier);
++        if (const auto& VK = primaryRenderer->vkCopier; VK && VK->canCopy(from, to)) {
++            const auto RESULT = VK->copy(from, to, waitFD, damage);
++            if (VK_DEBUG)
++                fprintf(stderr, "[aq-vk] blit: copy %s fence %d\n", RESULT.success ? "ok" : "FAILED", RESULT.syncFD);
++            if (RESULT.success) {
++                TRACE(backend->log(AQ_LOG_TRACE, std::format("blit: vulkan copy engine, fence {}", RESULT.syncFD)));
++                return {.success = true, .syncFD = RESULT.syncFD >= 0 ? std::optional<int>{RESULT.syncFD} : std::nullopt, .explicitRequired = true};
++            }
++            backend->log(AQ_LOG_DEBUG, "blit: vulkan copy failed, falling back to GL");
++        }
++    }
++
++    CEglContextGuard eglContext(*this);
++
+     if (waitFD >= 0 && !CFileDescriptor::isReadable(waitFD)) {
+         // wait on a provided explicit fence
+         waitOnSync(waitFD);
+diff --git a/src/backend/drm/Renderer.hpp b/src/backend/drm/Renderer.hpp
+index ca59dfa..0eb2974 100644
+--- a/src/backend/drm/Renderer.hpp
++++ b/src/backend/drm/Renderer.hpp
+@@ -2,6 +2,7 @@
+ 
+ #include <aquamarine/backend/DRM.hpp>
+ #include "FormatUtils.hpp"
++#include "VulkanCopy.hpp"
+ #include <EGL/egl.h>
+ #include <EGL/eglext.h>
+ #include <GLES3/gl3.h>
+@@ -99,10 +100,15 @@ namespace Aquamarine {
+         struct SBlitResult {
+             bool               success = false;
+             std::optional<int> syncFD;
++            // the copy was done by a device that doesn't participate in implicit sync (Vulkan copy
++            // engine): if syncFD is set, the consumer MUST wait on it before using `to`.
++            bool               explicitRequired = false;
+         };
+ 
++        // `damage` is optional and only used by the Vulkan copy-engine path (the GL path always
++        // blits the whole buffer). Pixel coordinates of `to`; nullptr means "unknown, copy all".
+         SBlitResult blit(Hyprutils::Memory::CSharedPointer<IBuffer> from, Hyprutils::Memory::CSharedPointer<IBuffer> to,
+-                         Hyprutils::Memory::CSharedPointer<CDRMRenderer> primaryRenderer, int waitFD = -1);
++                         Hyprutils::Memory::CSharedPointer<CDRMRenderer> primaryRenderer, int waitFD = -1, const Hyprutils::Math::CRegion* damage = nullptr);
+         // can't be a SP<> because we call it from buf's ctor...
+         void clearBuffer(IBuffer* buf);
+ 
+@@ -159,6 +165,12 @@ namespace Aquamarine {
+         Hyprutils::Memory::CWeakPointer<CDRMRenderer> self;
+         std::vector<SGLFormat>                        formats;
+ 
++        // Vulkan copy engine on this renderer's GPU, used when this GPU is the primary of a
++        // multi-GPU setup and the secondary can't import our buffers. Created lazily.
++        void                                          ensureVulkanCopier();
++        Hyprutils::Memory::CSharedPointer<CVulkanCopier> vkCopier;
++        bool                                          vkCopierAttempted = false;
++
+       private:
+         CDRMRenderer() = default;
+ 
+diff --git a/src/backend/drm/VulkanCopy.cpp b/src/backend/drm/VulkanCopy.cpp
+new file mode 100644
+index 0000000..7c239a5
+--- /dev/null
++++ b/src/backend/drm/VulkanCopy.cpp
+@@ -0,0 +1,957 @@
++#include "VulkanCopy.hpp"
++#include "Shared.hpp"
++#include "FormatUtils.hpp"
++#include <drm_fourcc.h>
++#include <format>
++#include <cstring>
++#include <cstdlib>
++#include <algorithm>
++#include <fcntl.h>
++#include <unistd.h>
++#include <poll.h>
++#include <sys/stat.h>
++#include <sys/sysmacros.h>
++
++#ifdef AQUAMARINE_HAS_VULKAN
++#include <dlfcn.h>
++#endif
++
++using namespace Aquamarine;
++using namespace Hyprutils::Memory;
++using namespace Hyprutils::Math;
++#define SP CSharedPointer
++#define WP CWeakPointer
++
++#ifndef AQUAMARINE_HAS_VULKAN
++
++// ---- stub build: no vulkan headers at build time
++
++SP<CVulkanCopier> CVulkanCopier::attempt(SP<CBackend> backend, int drmFD) {
++    backend->log(AQ_LOG_DEBUG, "vulkan: aquamarine was built without Vulkan support, mGPU copy engine path unavailable");
++    return nullptr;
++}
++CVulkanCopier::~CVulkanCopier() = default;
++std::vector<uint64_t> CVulkanCopier::importableModifiers(uint32_t, bool) {
++    return {};
++}
++bool CVulkanCopier::canCopy(SP<IBuffer>, SP<IBuffer>) {
++    return false;
++}
++CVulkanCopier::SResult CVulkanCopier::copy(SP<IBuffer>, SP<IBuffer>, int, const Hyprutils::Math::CRegion*) {
++    return {};
++}
++bool CVulkanCopier::healthy() const {
++    return false;
++}
++
++#else
++
++// ---- real implementation
++
++#define LOAD_INSTANCE_FN(NAME)                                                                                                                                                     \
++    fn.NAME = (PFN_##NAME)fn.vkGetInstanceProcAddr(instance, #NAME);                                                                                                               \
++    if (!fn.NAME) {                                                                                                                                                                \
++        log(AQ_LOG_ERROR, "vulkan: missing instance function " #NAME);                                                                                                             \
++        return false;                                                                                                                                                              \
++    }
++
++#define LOAD_DEVICE_FN(NAME)                                                                                                                                                       \
++    fn.NAME = (PFN_##NAME)fn.vkGetDeviceProcAddr(device, #NAME);                                                                                                                   \
++    if (!fn.NAME) {                                                                                                                                                                \
++        log(AQ_LOG_ERROR, "vulkan: missing device function " #NAME);                                                                                                               \
++        return false;                                                                                                                                                              \
++    }
++
++static const char* REQUIRED_DEVICE_EXTS[] = {
++    VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,        VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME, VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME,
++    VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,     VK_EXT_QUEUE_FAMILY_FOREIGN_EXTENSION_NAME,
++};
++
++CVulkanImageAttachment::CVulkanImageAttachment(WP<CVulkanCopier> copier_, VkImage image_, VkDeviceMemory memory_, bool source_) :
++    copier(copier_), image(image_), memory(memory_), source(source_) {}
++
++CVulkanImageAttachment::~CVulkanImageAttachment() {
++    if (copier.expired())
++        return;
++    copier->destroyImage(image, memory);
++}
++
++void CVulkanCopier::log(eBackendLogLevel level, const std::string& msg) {
++    if (debug)
++        fprintf(stderr, "[aq-vk] %s\n", msg.c_str());
++    if (const auto B = backend.lock())
++        B->log(level, msg);
++}
++
++SP<CVulkanCopier> CVulkanCopier::attempt(SP<CBackend> backend_, int drmFD) {
++    if (envEnabled("AQ_MGPU_NO_VULKAN")) {
++        backend_->log(AQ_LOG_DEBUG, "vulkan: AQ_MGPU_NO_VULKAN set, not creating a copier");
++        return nullptr;
++    }
++
++    auto copier     = SP<CVulkanCopier>(new CVulkanCopier());
++    copier->backend = backend_;
++    copier->self    = copier;
++    copier->debug   = envEnabled("AQ_MGPU_VK_DEBUG");
++    copier->log(AQ_LOG_DEBUG, std::format("vulkan: creating copier for drm fd {}", drmFD));
++
++    if (!copier->init(drmFD)) {
++        backend_->log(AQ_LOG_DEBUG, "vulkan: copier init failed");
++        return nullptr;
++    }
++
++    backend_->log(AQ_LOG_DEBUG, std::format("vulkan: copier ready on {} (queue family {})", copier->deviceName, copier->queueFamily));
++    return copier;
++}
++
++CVulkanCopier::~CVulkanCopier() {
++    if (device) {
++        drainPending(2'000'000'000ull);
++        destroySlots();
++        if (commandPool)
++            fn.vkDestroyCommandPool(device, commandPool, nullptr);
++        fn.vkDestroyDevice(device, nullptr);
++    }
++    if (instance && fn.vkDestroyInstance)
++        fn.vkDestroyInstance(instance, nullptr);
++    if (loaderHandle)
++        dlclose(loaderHandle);
++}
++
++bool CVulkanCopier::healthy() const {
++    return device && !broken;
++}
++
++bool CVulkanCopier::loadLoader() {
++    loaderHandle = dlopen("libvulkan.so.1", RTLD_NOW | RTLD_LOCAL);
++    if (!loaderHandle) {
++        log(AQ_LOG_DEBUG, "vulkan: libvulkan.so.1 not found");
++        return false;
++    }
++
++    fn.vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)dlsym(loaderHandle, "vkGetInstanceProcAddr");
++    if (!fn.vkGetInstanceProcAddr) {
++        log(AQ_LOG_ERROR, "vulkan: loader has no vkGetInstanceProcAddr");
++        return false;
++    }
++
++    fn.vkCreateInstance = (PFN_vkCreateInstance)fn.vkGetInstanceProcAddr(nullptr, "vkCreateInstance");
++    return !!fn.vkCreateInstance;
++}
++
++// NVIDIA's Vulkan ICD (libGLX_nvidia.so.0) calls XOpenDisplay($DISPLAY) from
++// vk_icdNegotiateLoaderICDInterfaceVersion, i.e. inside vkCreateInstance. In a compositor
++// $DISPLAY is the compositor's own (lazily served) Xwayland socket, so the connection is never
++// answered and the compositor deadlocks on itself (traced with an LD_PRELOAD connect() shim).
++// Hide $DISPLAY and $WAYLAND_DISPLAY while we initialise Vulkan; nothing here needs a window system.
++class CScrubDisplayEnv {
++  public:
++    CScrubDisplayEnv() {
++        for (const auto& v : {"WAYLAND_DISPLAY", "DISPLAY"}) {
++            if (const char* e = getenv(v)) {
++                saved.emplace_back(v, e);
++                unsetenv(v);
++            }
++        }
++        // hygiene: no implicit layers (overlays, device-select, ...) in a compositor's copy engine
++        if (const char* e = getenv("VK_LOADER_LAYERS_DISABLE"))
++            savedLayers = e;
++        setenv("VK_LOADER_LAYERS_DISABLE", "~implicit~", 1);
++    }
++    ~CScrubDisplayEnv() {
++        for (const auto& [k, val] : saved)
++            setenv(k.c_str(), val.c_str(), 1);
++        if (savedLayers)
++            setenv("VK_LOADER_LAYERS_DISABLE", savedLayers->c_str(), 1);
++        else
++            unsetenv("VK_LOADER_LAYERS_DISABLE");
++    }
++  private:
++    std::vector<std::pair<std::string, std::string>> saved;
++    std::optional<std::string>                       savedLayers;
++};
++
++bool CVulkanCopier::init(int drmFD) {
++    CScrubDisplayEnv scrub;
++
++    log(AQ_LOG_DEBUG, "vulkan: init: loading libvulkan");
++    if (!loadLoader())
++        return false;
++    log(AQ_LOG_DEBUG, "vulkan: init: creating instance");
++
++    VkApplicationInfo app = {
++        .sType            = VK_STRUCTURE_TYPE_APPLICATION_INFO,
++        .pApplicationName = "aquamarine",
++        .apiVersion       = VK_API_VERSION_1_1,
++    };
++    VkInstanceCreateInfo ici = {
++        .sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
++        .pApplicationInfo = &app,
++    };
++    if (fn.vkCreateInstance(&ici, nullptr, &instance) != VK_SUCCESS) {
++        log(AQ_LOG_ERROR, "vulkan: vkCreateInstance failed");
++        return false;
++    }
++
++    log(AQ_LOG_DEBUG, "vulkan: init: instance created, picking device");
++    LOAD_INSTANCE_FN(vkDestroyInstance);
++    LOAD_INSTANCE_FN(vkEnumeratePhysicalDevices);
++    LOAD_INSTANCE_FN(vkGetPhysicalDeviceProperties2);
++    LOAD_INSTANCE_FN(vkGetPhysicalDeviceQueueFamilyProperties);
++    LOAD_INSTANCE_FN(vkGetPhysicalDeviceMemoryProperties);
++    LOAD_INSTANCE_FN(vkEnumerateDeviceExtensionProperties);
++    LOAD_INSTANCE_FN(vkGetPhysicalDeviceFormatProperties2);
++    LOAD_INSTANCE_FN(vkGetPhysicalDeviceImageFormatProperties2);
++    LOAD_INSTANCE_FN(vkGetPhysicalDeviceExternalSemaphoreProperties);
++    LOAD_INSTANCE_FN(vkCreateDevice);
++    LOAD_INSTANCE_FN(vkGetDeviceProcAddr);
++
++    if (!pickPhysicalDevice(drmFD))
++        return false;
++
++    log(AQ_LOG_DEBUG, "vulkan: init: device picked, creating logical device");
++    if (!createDevice())
++        return false;
++
++    log(AQ_LOG_DEBUG, "vulkan: init: logical device created");
++    if (!createSlots())
++        return false;
++
++    return true;
++}
++
++bool CVulkanCopier::pickPhysicalDevice(int drmFD) {
++    struct stat st;
++    if (fstat(drmFD, &st) != 0 || !S_ISCHR(st.st_mode)) {
++        log(AQ_LOG_ERROR, "vulkan: drm fd is not a character device");
++        return false;
++    }
++    const auto MAJ = major(st.st_rdev), MIN = minor(st.st_rdev);
++
++    uint32_t   n = 0;
++    log(AQ_LOG_DEBUG, "vulkan: init: enumerating physical devices");
++    fn.vkEnumeratePhysicalDevices(instance, &n, nullptr);
++    std::vector<VkPhysicalDevice> devices(n);
++    fn.vkEnumeratePhysicalDevices(instance, &n, devices.data());
++
++    for (const auto& pd : devices) {
++        uint32_t ne = 0;
++        fn.vkEnumerateDeviceExtensionProperties(pd, nullptr, &ne, nullptr);
++        std::vector<VkExtensionProperties> exts(ne);
++        fn.vkEnumerateDeviceExtensionProperties(pd, nullptr, &ne, exts.data());
++
++        auto hasExt = [&exts](const char* name) { return std::ranges::any_of(exts, [name](const auto& e) { return std::strcmp(e.extensionName, name) == 0; }); };
++
++        if (!hasExt(VK_EXT_PHYSICAL_DEVICE_DRM_EXTENSION_NAME))
++            continue;
++
++        VkPhysicalDeviceDrmPropertiesEXT drmProps = {.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRM_PROPERTIES_EXT};
++        VkPhysicalDeviceProperties2      props    = {.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2, .pNext = &drmProps};
++        fn.vkGetPhysicalDeviceProperties2(pd, &props);
++
++        const bool MATCH = (drmProps.hasPrimary && (unsigned)drmProps.primaryMajor == MAJ && (unsigned)drmProps.primaryMinor == MIN) ||
++            (drmProps.hasRender && (unsigned)drmProps.renderMajor == MAJ && (unsigned)drmProps.renderMinor == MIN);
++        if (!MATCH)
++            continue;
++
++        deviceName = props.properties.deviceName;
++
++        bool ok = true;
++        for (const auto& e : REQUIRED_DEVICE_EXTS) {
++            if (!hasExt(e)) {
++                log(AQ_LOG_DEBUG, std::format("vulkan: {} lacks {}", deviceName, e));
++                ok = false;
++            }
++        }
++        if (!ok)
++            return false;
++
++        // sync_file semaphores both ways
++        VkPhysicalDeviceExternalSemaphoreInfo si = {.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SEMAPHORE_INFO, .handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT};
++        VkExternalSemaphoreProperties         sp = {.sType = VK_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_PROPERTIES};
++        fn.vkGetPhysicalDeviceExternalSemaphoreProperties(pd, &si, &sp);
++        if (!(sp.externalSemaphoreFeatures & VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT) || !(sp.externalSemaphoreFeatures & VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT)) {
++            log(AQ_LOG_DEBUG, std::format("vulkan: {} can't import/export sync_file semaphores", deviceName));
++            return false;
++        }
++
++        physical = pd;
++        fn.vkGetPhysicalDeviceMemoryProperties(physical, &memoryProps);
++        return true;
++    }
++
++    log(AQ_LOG_DEBUG, std::format("vulkan: no physical device matches drm node {}:{}", MAJ, MIN));
++    return false;
++}
++
++bool CVulkanCopier::createDevice() {
++    uint32_t nq = 0;
++    fn.vkGetPhysicalDeviceQueueFamilyProperties(physical, &nq, nullptr);
++    std::vector<VkQueueFamilyProperties> families(nq);
++    fn.vkGetPhysicalDeviceQueueFamilyProperties(physical, &nq, families.data());
++
++    // prefer a dedicated transfer queue (copy engine): doesn't compete with the compositor's 3D work
++    queueFamily = UINT32_MAX;
++    for (uint32_t i = 0; i < nq; ++i) {
++        const auto F = families[i].queueFlags;
++        if ((F & VK_QUEUE_TRANSFER_BIT) && !(F & VK_QUEUE_GRAPHICS_BIT) && !(F & VK_QUEUE_COMPUTE_BIT)) {
++            queueFamily = i;
++            break;
++        }
++    }
++    if (queueFamily == UINT32_MAX) {
++        for (uint32_t i = 0; i < nq; ++i) {
++            if (families[i].queueFlags & (VK_QUEUE_TRANSFER_BIT | VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT)) {
++                queueFamily = i;
++                break;
++            }
++        }
++    }
++    if (queueFamily == UINT32_MAX) {
++        log(AQ_LOG_ERROR, "vulkan: no usable queue family");
++        return false;
++    }
++
++    float                   prio = 1.F;
++    VkDeviceQueueCreateInfo qci  = {
++         .sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
++         .queueFamilyIndex = queueFamily,
++         .queueCount       = 1,
++         .pQueuePriorities = &prio,
++    };
++    VkDeviceCreateInfo dci = {
++        .sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
++        .queueCreateInfoCount    = 1,
++        .pQueueCreateInfos       = &qci,
++        .enabledExtensionCount   = sizeof(REQUIRED_DEVICE_EXTS) / sizeof(REQUIRED_DEVICE_EXTS[0]),
++        .ppEnabledExtensionNames = REQUIRED_DEVICE_EXTS,
++    };
++    if (fn.vkCreateDevice(physical, &dci, nullptr, &device) != VK_SUCCESS) {
++        log(AQ_LOG_ERROR, "vulkan: vkCreateDevice failed");
++        device = VK_NULL_HANDLE;
++        return false;
++    }
++
++    LOAD_DEVICE_FN(vkDestroyDevice);
++    LOAD_DEVICE_FN(vkGetDeviceQueue);
++    LOAD_DEVICE_FN(vkDeviceWaitIdle);
++    LOAD_DEVICE_FN(vkCreateCommandPool);
++    LOAD_DEVICE_FN(vkDestroyCommandPool);
++    LOAD_DEVICE_FN(vkAllocateCommandBuffers);
++    LOAD_DEVICE_FN(vkResetCommandBuffer);
++    LOAD_DEVICE_FN(vkBeginCommandBuffer);
++    LOAD_DEVICE_FN(vkEndCommandBuffer);
++    LOAD_DEVICE_FN(vkCmdPipelineBarrier);
++    LOAD_DEVICE_FN(vkCmdCopyImage);
++    LOAD_DEVICE_FN(vkQueueSubmit);
++    LOAD_DEVICE_FN(vkCreateFence);
++    LOAD_DEVICE_FN(vkDestroyFence);
++    LOAD_DEVICE_FN(vkWaitForFences);
++    LOAD_DEVICE_FN(vkResetFences);
++    LOAD_DEVICE_FN(vkGetFenceStatus);
++    LOAD_DEVICE_FN(vkCreateSemaphore);
++    LOAD_DEVICE_FN(vkDestroySemaphore);
++    LOAD_DEVICE_FN(vkGetSemaphoreFdKHR);
++    LOAD_DEVICE_FN(vkImportSemaphoreFdKHR);
++    LOAD_DEVICE_FN(vkCreateImage);
++    LOAD_DEVICE_FN(vkDestroyImage);
++    LOAD_DEVICE_FN(vkGetImageMemoryRequirements2);
++    LOAD_DEVICE_FN(vkGetMemoryFdPropertiesKHR);
++    LOAD_DEVICE_FN(vkAllocateMemory);
++    LOAD_DEVICE_FN(vkFreeMemory);
++    LOAD_DEVICE_FN(vkBindImageMemory);
++
++    fn.vkGetDeviceQueue(device, queueFamily, 0, &queue);
++
++    VkCommandPoolCreateInfo pci = {
++        .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
++        .flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
++        .queueFamilyIndex = queueFamily,
++    };
++    if (fn.vkCreateCommandPool(device, &pci, nullptr, &commandPool) != VK_SUCCESS) {
++        log(AQ_LOG_ERROR, "vulkan: vkCreateCommandPool failed");
++        return false;
++    }
++
++    return true;
++}
++
++bool CVulkanCopier::createSlots() {
++    slots.resize(SLOTS);
++    for (auto& s : slots) {
++        VkCommandBufferAllocateInfo cai = {
++            .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
++            .commandPool        = commandPool,
++            .level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
++            .commandBufferCount = 1,
++        };
++        if (fn.vkAllocateCommandBuffers(device, &cai, &s.cmd) != VK_SUCCESS)
++            return false;
++
++        VkFenceCreateInfo fci = {.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
++        if (fn.vkCreateFence(device, &fci, nullptr, &s.fence) != VK_SUCCESS)
++            return false;
++
++        VkExportSemaphoreCreateInfo esci = {.sType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, .handleTypes = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT};
++        VkSemaphoreCreateInfo       sci  = {.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, .pNext = &esci};
++        if (fn.vkCreateSemaphore(device, &sci, nullptr, &s.signalSem) != VK_SUCCESS)
++            return false;
++
++        VkSemaphoreCreateInfo plain = {.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
++        if (fn.vkCreateSemaphore(device, &plain, nullptr, &s.waitSem) != VK_SUCCESS)
++            return false;
++    }
++    return true;
++}
++
++void CVulkanCopier::destroySlots() {
++    for (auto& s : slots) {
++        if (s.lastFD >= 0)
++            close(s.lastFD);
++        if (s.waitSem)
++            fn.vkDestroySemaphore(device, s.waitSem, nullptr);
++        if (s.signalSem)
++            fn.vkDestroySemaphore(device, s.signalSem, nullptr);
++        if (s.fence)
++            fn.vkDestroyFence(device, s.fence, nullptr);
++    }
++    slots.clear();
++}
++
++std::optional<VkFormat> CVulkanCopier::vkFormat(uint32_t fourcc) {
++    switch (fourcc) {
++        case DRM_FORMAT_XRGB8888:
++        case DRM_FORMAT_ARGB8888: return VK_FORMAT_B8G8R8A8_UNORM;
++        case DRM_FORMAT_XBGR8888:
++        case DRM_FORMAT_ABGR8888: return VK_FORMAT_R8G8B8A8_UNORM;
++        case DRM_FORMAT_XRGB2101010:
++        case DRM_FORMAT_ARGB2101010: return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
++        case DRM_FORMAT_XBGR2101010:
++        case DRM_FORMAT_ABGR2101010: return VK_FORMAT_A2B10G10R10_UNORM_PACK32;
++        case DRM_FORMAT_XBGR16161616F:
++        case DRM_FORMAT_ABGR16161616F: return VK_FORMAT_R16G16B16A16_SFLOAT;
++        case DRM_FORMAT_XBGR16161616:
++        case DRM_FORMAT_ABGR16161616: return VK_FORMAT_R16G16B16A16_UNORM;
++        case DRM_FORMAT_RGB565: return VK_FORMAT_R5G6B5_UNORM_PACK16;
++        default: return std::nullopt;
++    }
++}
++
++bool CVulkanCopier::modifierImportable(VkFormat format, uint64_t modifier, VkImageUsageFlags usage) {
++    VkPhysicalDeviceImageDrmFormatModifierInfoEXT modInfo = {
++        .sType             = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT,
++        .drmFormatModifier = modifier,
++        .sharingMode       = VK_SHARING_MODE_EXCLUSIVE,
++    };
++    VkPhysicalDeviceExternalImageFormatInfo extInfo = {
++        .sType      = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO,
++        .pNext      = &modInfo,
++        .handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
++    };
++    VkPhysicalDeviceImageFormatInfo2 info = {
++        .sType  = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2,
++        .pNext  = &extInfo,
++        .format = format,
++        .type   = VK_IMAGE_TYPE_2D,
++        .tiling = VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT,
++        .usage  = usage,
++    };
++    VkExternalImageFormatProperties extProps = {.sType = VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES};
++    VkImageFormatProperties2        props    = {.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2, .pNext = &extProps};
++
++    if (fn.vkGetPhysicalDeviceImageFormatProperties2(physical, &info, &props) != VK_SUCCESS)
++        return false;
++
++    return extProps.externalMemoryProperties.externalMemoryFeatures & VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT;
++}
++
++std::vector<uint64_t> CVulkanCopier::importableModifiers(uint32_t fourcc, bool asSource) {
++    if (!device)
++        return {};
++
++    const auto KEY = std::make_pair(fourcc, asSource);
++    if (auto it = modifierCache.find(KEY); it != modifierCache.end())
++        return it->second;
++
++    std::vector<uint64_t> result;
++    const auto            FORMAT = vkFormat(fourcc);
++    if (!FORMAT) {
++        modifierCache[KEY] = result;
++        return result;
++    }
++
++    const VkImageUsageFlags USAGE = asSource ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_TRANSFER_DST_BIT;
++    const VkFormatFeatureFlags NEEDED = asSource ? VK_FORMAT_FEATURE_TRANSFER_SRC_BIT : VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
++
++    VkDrmFormatModifierPropertiesListEXT list = {.sType = VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_EXT};
++    VkFormatProperties2                  fp   = {.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2, .pNext = &list};
++    fn.vkGetPhysicalDeviceFormatProperties2(physical, *FORMAT, &fp);
++    std::vector<VkDrmFormatModifierPropertiesEXT> props(list.drmFormatModifierCount);
++    list.pDrmFormatModifierProperties = props.data();
++    fn.vkGetPhysicalDeviceFormatProperties2(physical, *FORMAT, &fp);
++
++    for (const auto& p : props) {
++        if (p.drmFormatModifierPlaneCount != 1)
++            continue;
++        if (!(p.drmFormatModifierTilingFeatures & NEEDED))
++            continue;
++        if (!modifierImportable(*FORMAT, p.drmFormatModifier, USAGE))
++            continue;
++        result.emplace_back(p.drmFormatModifier);
++    }
++
++    TRACE(log(AQ_LOG_TRACE, std::format("vulkan: {} importable modifiers for {} as {}", result.size(), fourccToName(fourcc), asSource ? "source" : "destination")));
++
++    modifierCache[KEY] = result;
++    return result;
++}
++
++bool CVulkanCopier::canCopy(SP<IBuffer> from, SP<IBuffer> to) {
++    if (!healthy() || !from || !to)
++        return false;
++
++    const auto FROM = from->dmabuf();
++    const auto TO   = to->dmabuf();
++    if (!FROM.success || !TO.success || FROM.planes != 1 || TO.planes != 1)
++        return false;
++    if (FROM.size != TO.size)
++        return false;
++
++    const auto FF = vkFormat(FROM.format), TF = vkFormat(TO.format);
++    if (!FF || !TF || *FF != *TF)
++        return false;
++
++    const auto SRC_MODS = importableModifiers(FROM.format, true);
++    const auto DST_MODS = importableModifiers(TO.format, false);
++    if (std::ranges::find(SRC_MODS, FROM.modifier) == SRC_MODS.end())
++        return false;
++    if (std::ranges::find(DST_MODS, TO.modifier) == DST_MODS.end())
++        return false;
++
++    return true;
++}
++
++bool CVulkanCopier::drainPending(uint64_t timeoutNs) {
++    bool ok = true;
++    for (auto& s : slots) {
++        if (!s.pending)
++            continue;
++        if (fn.vkWaitForFences(device, 1, &s.fence, VK_TRUE, timeoutNs) != VK_SUCCESS) {
++            ok = false;
++            continue;
++        }
++        fn.vkResetFences(device, 1, &s.fence);
++        s.pending = false;
++    }
++    return ok;
++}
++
++void CVulkanCopier::destroyImage(VkImage image, VkDeviceMemory memory) {
++    if (!device)
++        return;
++    // an in-flight copy may still reference it: wait for pending copies, bounded. If something is
++    // stuck we'd rather leak the image than hang the compositor.
++    if (!drainPending(1'000'000'000ull)) {
++        log(AQ_LOG_ERROR, "vulkan: pending copy never finished, leaking image and disabling the copy engine");
++        broken = true;
++        return;
++    }
++    if (image)
++        fn.vkDestroyImage(device, image, nullptr);
++    if (memory)
++        fn.vkFreeMemory(device, memory, nullptr);
++}
++
++SP<CVulkanImageAttachment> CVulkanCopier::importBuffer(SP<IBuffer> buf, bool asSource) {
++    if (auto att = buf->attachments.get<CVulkanImageAttachment>()) {
++        if (att->copier == self && att->source == asSource)
++            return att;
++        buf->attachments.removeByType<CVulkanImageAttachment>();
++    }
++
++    const auto DMA    = buf->dmabuf();
++    const auto FORMAT = vkFormat(DMA.format);
++    if (!FORMAT)
++        return nullptr;
++
++    VkSubresourceLayout layout = {
++        .offset   = DMA.offsets[0],
++        .rowPitch = DMA.strides[0],
++    };
++    VkImageDrmFormatModifierExplicitCreateInfoEXT modCI = {
++        .sType                       = VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_EXPLICIT_CREATE_INFO_EXT,
++        .drmFormatModifier           = DMA.modifier,
++        .drmFormatModifierPlaneCount = 1,
++        .pPlaneLayouts               = &layout,
++    };
++    VkExternalMemoryImageCreateInfo extCI = {
++        .sType       = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO,
++        .pNext       = &modCI,
++        .handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
++    };
++    VkImageCreateInfo ici = {
++        .sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
++        .pNext         = &extCI,
++        .imageType     = VK_IMAGE_TYPE_2D,
++        .format        = *FORMAT,
++        .extent        = {(uint32_t)DMA.size.x, (uint32_t)DMA.size.y, 1},
++        .mipLevels     = 1,
++        .arrayLayers   = 1,
++        .samples       = VK_SAMPLE_COUNT_1_BIT,
++        .tiling        = VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT,
++        .usage         = asSource ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_TRANSFER_DST_BIT,
++        .sharingMode   = VK_SHARING_MODE_EXCLUSIVE,
++        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
++    };
++
++    VkImage image = VK_NULL_HANDLE;
++    if (auto r = fn.vkCreateImage(device, &ici, nullptr, &image); r != VK_SUCCESS) {
++        log(AQ_LOG_ERROR, std::format("vulkan: vkCreateImage failed ({}) for modifier 0x{:x}", (int)r, DMA.modifier));
++        return nullptr;
++    }
++
++    VkMemoryFdPropertiesKHR fdProps = {.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR};
++    if (auto r = fn.vkGetMemoryFdPropertiesKHR(device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT, DMA.fds[0], &fdProps); r != VK_SUCCESS) {
++        log(AQ_LOG_ERROR, std::format("vulkan: vkGetMemoryFdPropertiesKHR failed ({})", (int)r));
++        fn.vkDestroyImage(device, image, nullptr);
++        return nullptr;
++    }
++
++    VkMemoryRequirements2           req     = {.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2};
++    VkImageMemoryRequirementsInfo2 reqInfo = {.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2, .image = image};
++    fn.vkGetImageMemoryRequirements2(device, &reqInfo, &req);
++
++    const uint32_t BITS = fdProps.memoryTypeBits & req.memoryRequirements.memoryTypeBits;
++    uint32_t       memType = UINT32_MAX;
++    for (uint32_t i = 0; i < memoryProps.memoryTypeCount; ++i) {
++        if (BITS & (1u << i)) {
++            memType = i;
++            break;
++        }
++    }
++    if (memType == UINT32_MAX) {
++        log(AQ_LOG_ERROR, "vulkan: no memory type can hold the imported dma-buf");
++        fn.vkDestroyImage(device, image, nullptr);
++        return nullptr;
++    }
++
++    // the import consumes the fd
++    const int DUP = fcntl(DMA.fds[0], F_DUPFD_CLOEXEC, 0);
++    if (DUP < 0) {
++        fn.vkDestroyImage(device, image, nullptr);
++        return nullptr;
++    }
++
++    VkMemoryDedicatedAllocateInfo dedicated = {.sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO, .image = image};
++    VkImportMemoryFdInfoKHR       import    = {
++                 .sType      = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR,
++                 .pNext      = &dedicated,
++                 .handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
++                 .fd         = DUP,
++    };
++    VkMemoryAllocateInfo mai = {
++        .sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
++        .pNext           = &import,
++        .allocationSize  = req.memoryRequirements.size,
++        .memoryTypeIndex = memType,
++    };
++    VkDeviceMemory memory = VK_NULL_HANDLE;
++    if (auto r = fn.vkAllocateMemory(device, &mai, nullptr, &memory); r != VK_SUCCESS) {
++        log(AQ_LOG_ERROR, std::format("vulkan: dma-buf import (vkAllocateMemory) failed ({})", (int)r));
++        close(DUP);
++        fn.vkDestroyImage(device, image, nullptr);
++        return nullptr;
++    }
++
++    if (auto r = fn.vkBindImageMemory(device, image, memory, 0); r != VK_SUCCESS) {
++        log(AQ_LOG_ERROR, std::format("vulkan: vkBindImageMemory failed ({})", (int)r));
++        fn.vkFreeMemory(device, memory, nullptr);
++        fn.vkDestroyImage(device, image, nullptr);
++        return nullptr;
++    }
++
++    auto att = makeShared<CVulkanImageAttachment>(self, image, memory, asSource);
++    if (!asSource) {
++        // a fresh destination holds nothing we put there: everything is stale
++        att->stale = Hyprutils::Math::CRegion{0, 0, DMA.size.x, DMA.size.y};
++        std::erase_if(destinations, [](const auto& d) { return d.expired(); });
++        destinations.emplace_back(att);
++    }
++    buf->attachments.add(att);
++
++    TRACE(log(AQ_LOG_TRACE, std::format("vulkan: imported {}x{} {} modifier 0x{:x} as {}", DMA.size.x, DMA.size.y, fourccToName(DMA.format), DMA.modifier, asSource ? "source" : "destination")));
++
++    return att;
++}
++
++CVulkanCopier::SResult CVulkanCopier::copy(SP<IBuffer> from, SP<IBuffer> to, int waitFD, const Hyprutils::Math::CRegion* damage) {
++    if (!canCopy(from, to))
++        return {};
++
++    auto fail = [this](const std::string& why) -> SResult {
++        log(AQ_LOG_ERROR, std::format("vulkan: copy failed: {}", why));
++        if (++failures >= 3) {
++            log(AQ_LOG_ERROR, "vulkan: too many failures, disabling the copy engine path");
++            broken = true;
++        }
++        return {};
++    };
++
++    const auto SRC = importBuffer(from, true);
++    if (!SRC)
++        return fail("source import");
++    const auto DST = importBuffer(to, false);
++    if (!DST)
++        return fail("destination import");
++
++    // ---- what has to be copied into *this* destination
++    static const bool ALWAYS_FULL = envEnabled("AQ_MGPU_VK_FULL_COPIES");
++
++    const auto    DST_SIZE = to->dmabuf().size;
++    const CRegion FULL{0, 0, DST_SIZE.x, DST_SIZE.y};
++    CRegion       newContent = damage ? damage->copy().intersect(FULL) : FULL.copy();
++    CRegion       toCopy     = (ALWAYS_FULL || DST->fullCopiesLeft > 0) ? FULL.copy() : DST->stale.copy().add(newContent).intersect(FULL);
++
++    // every other destination now lags behind by this frame's damage. Done before the copy is
++    // attempted so a failure (and the GL fallback that follows it) can't lose the information.
++    std::erase_if(destinations, [](const auto& d) { return d.expired(); });
++    for (const auto& D : destinations) {
++        if (D.get() != DST.get())
++            D->stale.add(newContent);
++    }
++
++    if (toCopy.empty()) {
++        // this buffer already holds exactly what the compositor rendered
++        TRACE(log(AQ_LOG_TRACE, "vulkan: copy skipped, destination already up to date"));
++        return {.success = true, .syncFD = -1};
++    }
++
++    // pixman can hand us a lot of little rectangles; past a point one bounding box is cheaper
++    std::vector<pixman_box32_t> boxes = toCopy.getRects();
++    if (boxes.size() > MAX_COPY_RECTS) {
++        const auto EXTENTS = toCopy.getExtents();
++        boxes              = CRegion{EXTENTS}.getRects();
++    }
++
++    // Two copies into the same image must not overlap: separate queue submissions have no
++    // ordering guarantee, so a still-running earlier copy could land after this one. Happens when
++    // the scanout swapchain is short (2 buffers) or a frame is repeated.
++    if (DST->lastSlot < slots.size()) {
++        auto& PREV = slots[DST->lastSlot];
++        if (PREV.pending && PREV.copyID == DST->lastCopyID) {
++            if (fn.vkWaitForFences(device, 1, &PREV.fence, VK_TRUE, 1'000'000'000ull) != VK_SUCCESS)
++                return fail("previous copy into this destination never finished");
++            fn.vkResetFences(device, 1, &PREV.fence);
++            PREV.pending = false;
++        }
++    }
++
++    auto&        slot     = slots[nextSlot];
++    const size_t SLOT_IDX = nextSlot;
++    nextSlot              = (nextSlot + 1) % slots.size();
++
++    if (slot.pending) {
++        // normally signalled long ago (a frame or more)
++        if (fn.vkWaitForFences(device, 1, &slot.fence, VK_TRUE, 1'000'000'000ull) != VK_SUCCESS)
++            return fail("previous copy in this slot never finished");
++        fn.vkResetFences(device, 1, &slot.fence);
++        slot.pending = false;
++    }
++    if (slot.lastFD >= 0) {
++        close(slot.lastFD);
++        slot.lastFD = -1;
++    }
++
++    // wait for the compositor's render fence on the GPU
++    bool haveWait = false;
++    if (waitFD >= 0) {
++        const int DUP = fcntl(waitFD, F_DUPFD_CLOEXEC, 0);
++        if (DUP >= 0) {
++            VkImportSemaphoreFdInfoKHR imp = {
++                .sType      = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR,
++                .semaphore  = slot.waitSem,
++                .flags      = VK_SEMAPHORE_IMPORT_TEMPORARY_BIT,
++                .handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT,
++                .fd         = DUP,
++            };
++            if (fn.vkImportSemaphoreFdKHR(device, &imp) == VK_SUCCESS)
++                haveWait = true;
++            else {
++                close(DUP);
++                // fall back to a cpu wait; not great but correct
++                pollfd pfd = {.fd = waitFD, .events = POLLIN};
++                poll(&pfd, 1, 100);
++            }
++        }
++    }
++
++    fn.vkResetCommandBuffer(slot.cmd, 0);
++    VkCommandBufferBeginInfo bi = {.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT};
++    if (fn.vkBeginCommandBuffer(slot.cmd, &bi) != VK_SUCCESS)
++        return fail("vkBeginCommandBuffer");
++
++    const VkImageSubresourceRange RANGE = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
++
++    // AQ_MGPU_VK_BARRIER selects how the images are handed between us and their foreign owners.
++    // 0 = queue-family transfer to/from FOREIGN (the textbook answer for dma-buf sharing)
++    // 1 = no ownership transfer, wide memory barriers
++    // 2 = transfer to/from FOREIGN plus wide memory barriers
++    static const int BARRIER_MODE = []() {
++        const char* e = getenv("AQ_MGPU_VK_BARRIER");
++        return e ? atoi(e) : 0;
++    }();
++    const bool     TRANSFER_OWNERSHIP = BARRIER_MODE != 1;
++    const uint32_t FOREIGN            = TRANSFER_OWNERSHIP ? VK_QUEUE_FAMILY_FOREIGN_EXT : VK_QUEUE_FAMILY_IGNORED;
++    const uint32_t OURS               = TRANSFER_OWNERSHIP ? queueFamily : VK_QUEUE_FAMILY_IGNORED;
++    const bool     WIDE               = BARRIER_MODE != 0;
++
++    // acquire both images from their foreign owners (GL on this GPU wrote the source, KMS on the
++    // other GPU scans the destination out)
++    VkImageMemoryBarrier acquire[2] = {
++        {
++            .sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
++            .srcAccessMask       = WIDE ? VK_ACCESS_MEMORY_WRITE_BIT : 0u,
++            .dstAccessMask       = VK_ACCESS_TRANSFER_READ_BIT | (WIDE ? VK_ACCESS_MEMORY_READ_BIT : 0u),
++            .oldLayout           = VK_IMAGE_LAYOUT_GENERAL,
++            .newLayout           = VK_IMAGE_LAYOUT_GENERAL,
++            .srcQueueFamilyIndex = FOREIGN,
++            .dstQueueFamilyIndex = OURS,
++            .image               = SRC->image,
++            .subresourceRange    = RANGE,
++        },
++        {
++            .sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
++            .srcAccessMask       = WIDE ? VK_ACCESS_MEMORY_WRITE_BIT : 0u,
++            .dstAccessMask       = VK_ACCESS_TRANSFER_WRITE_BIT | (WIDE ? VK_ACCESS_MEMORY_READ_BIT : 0u),
++            // GENERAL (not UNDEFINED) even on the first copy: a partial copy must keep whatever
++            // else is in the buffer, and UNDEFINED lets the driver discard the contents.
++            .oldLayout           = VK_IMAGE_LAYOUT_GENERAL,
++            .newLayout           = VK_IMAGE_LAYOUT_GENERAL,
++            .srcQueueFamilyIndex = FOREIGN,
++            .dstQueueFamilyIndex = OURS,
++            .image               = DST->image,
++            .subresourceRange    = RANGE,
++        },
++    };
++    fn.vkCmdPipelineBarrier(slot.cmd, WIDE ? VK_PIPELINE_STAGE_ALL_COMMANDS_BIT : VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
++                            nullptr, 2, acquire);
++
++    std::vector<VkImageCopy> regions;
++    regions.reserve(boxes.size());
++    uint64_t copiedPixels = 0;
++    for (const auto& B : boxes) {
++        const int32_t X = std::max(B.x1, 0), Y = std::max(B.y1, 0);
++        const int32_t W = std::min(B.x2, (int32_t)DST_SIZE.x) - X, H = std::min(B.y2, (int32_t)DST_SIZE.y) - Y;
++        if (W <= 0 || H <= 0)
++            continue;
++        regions.emplace_back(VkImageCopy{
++            .srcSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1},
++            .srcOffset      = {X, Y, 0},
++            .dstSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1},
++            .dstOffset      = {X, Y, 0},
++            .extent         = {(uint32_t)W, (uint32_t)H, 1},
++        });
++        copiedPixels += (uint64_t)W * H;
++    }
++    if (regions.empty())
++        return fail("damage region produced no valid copy rectangles");
++
++    fn.vkCmdCopyImage(slot.cmd, SRC->image, VK_IMAGE_LAYOUT_GENERAL, DST->image, VK_IMAGE_LAYOUT_GENERAL, regions.size(), regions.data());
++
++    VkImageMemoryBarrier release[2] = {
++        {
++            .sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
++            .srcAccessMask       = VK_ACCESS_TRANSFER_READ_BIT,
++            .dstAccessMask       = WIDE ? VK_ACCESS_MEMORY_READ_BIT : 0u,
++            .oldLayout           = VK_IMAGE_LAYOUT_GENERAL,
++            .newLayout           = VK_IMAGE_LAYOUT_GENERAL,
++            .srcQueueFamilyIndex = OURS,
++            .dstQueueFamilyIndex = FOREIGN,
++            .image               = SRC->image,
++            .subresourceRange    = RANGE,
++        },
++        {
++            .sType         = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
++            .srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
++            // HOST_READ as well: the destination lives in system memory and may legitimately be
++            // read by the CPU (tests, screen capture) once our fence signals.
++            .dstAccessMask       = VK_ACCESS_HOST_READ_BIT | (WIDE ? VK_ACCESS_MEMORY_READ_BIT : 0u),
++            .oldLayout           = VK_IMAGE_LAYOUT_GENERAL,
++            .newLayout           = VK_IMAGE_LAYOUT_GENERAL,
++            .srcQueueFamilyIndex = OURS,
++            .dstQueueFamilyIndex = FOREIGN,
++            .image               = DST->image,
++            .subresourceRange    = RANGE,
++        },
++    };
++    fn.vkCmdPipelineBarrier(slot.cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT | VK_PIPELINE_STAGE_HOST_BIT, 0, 0, nullptr, 0, nullptr, 2, release);
++
++    if (fn.vkEndCommandBuffer(slot.cmd) != VK_SUCCESS)
++        return fail("vkEndCommandBuffer");
++
++    const VkPipelineStageFlags WAIT_STAGE = VK_PIPELINE_STAGE_TRANSFER_BIT;
++    VkSubmitInfo               si         = {
++                          .sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO,
++                          .waitSemaphoreCount   = haveWait ? 1u : 0u,
++                          .pWaitSemaphores      = &slot.waitSem,
++                          .pWaitDstStageMask    = &WAIT_STAGE,
++                          .commandBufferCount   = 1,
++                          .pCommandBuffers      = &slot.cmd,
++                          .signalSemaphoreCount = 1,
++                          .pSignalSemaphores    = &slot.signalSem,
++    };
++    if (auto r = fn.vkQueueSubmit(queue, 1, &si, slot.fence); r != VK_SUCCESS) {
++        DST->stale = std::move(toCopy); // nothing was written, remember what it still needs
++        return fail(std::format("vkQueueSubmit ({})", (int)r));
++    }
++    slot.pending    = true;
++    slot.copyID     = ++copies;
++    DST->everCopied = true;
++    DST->lastSlot   = SLOT_IDX;
++    DST->lastCopyID = slot.copyID;
++    DST->stale.clear();
++    if (DST->fullCopiesLeft > 0)
++        --DST->fullCopiesLeft;
++
++    VkSemaphoreGetFdInfoKHR gi = {
++        .sType      = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR,
++        .semaphore  = slot.signalSem,
++        .handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT,
++    };
++    int fd = -1;
++    if (auto r = fn.vkGetSemaphoreFdKHR(device, &gi, &fd); r != VK_SUCCESS || fd < 0) {
++        // the copy was submitted; without a fence the consumer can only wait on the cpu
++        log(AQ_LOG_ERROR, std::format("vulkan: vkGetSemaphoreFdKHR failed ({}), waiting for the copy on the cpu", (int)r));
++        fn.vkWaitForFences(device, 1, &slot.fence, VK_TRUE, 1'000'000'000ull);
++        fn.vkResetFences(device, 1, &slot.fence);
++        slot.pending = false;
++        failures     = 0;
++        return {.success = true, .syncFD = -1};
++    }
++
++    slot.lastFD = fd;
++    failures    = 0;
++
++    if (!fenceProven) {
++        // first copy in this process: make sure the exported fence actually signals before we
++        // ever hand one to KMS. Bounded; a failure disables the path.
++        pollfd pfd = {.fd = fd, .events = POLLIN};
++        const int PR = poll(&pfd, 1, 500);
++        if (PR <= 0) {
++            log(AQ_LOG_ERROR, "vulkan: first copy fence did not signal within 500ms, disabling the copy engine");
++            broken = true;
++            return {};
++        }
++        fenceProven = true;
++        log(AQ_LOG_DEBUG, "vulkan: first copy fence signalled, copy engine path is live");
++    }
++
++    if (debug && (copies <= 20 || copies % 600 == 0))
++        log(AQ_LOG_DEBUG,
++            std::format("vulkan: copy #{} submitted: {} rect(s), {} of {} pixels ({:.1f}%), wait fd {}, signal fd {}", copies, regions.size(), copiedPixels,
++                        (uint64_t)(DST_SIZE.x * DST_SIZE.y), 100.0 * copiedPixels / std::max(1.0, DST_SIZE.x * DST_SIZE.y), waitFD, fd));
++
++    return {.success = true, .syncFD = fd};
++}
++
++#endif
+diff --git a/src/backend/drm/VulkanCopy.hpp b/src/backend/drm/VulkanCopy.hpp
+new file mode 100644
+index 0000000..132e40c
+--- /dev/null
++++ b/src/backend/drm/VulkanCopy.hpp
+@@ -0,0 +1,208 @@
++#pragma once
++
++// Cross-GPU copy using the *primary* GPU's Vulkan device.
++//
++// In a multi-GPU setup the compositor renders on the primary GPU and the secondary GPU scans the
++// result out. The classic path imports the primary's buffer into the secondary's EGL and blits
++// there; when the secondary cannot import the primary's memory at all (e.g. Intel iGPU <-> NVIDIA
++// dGPU: i915 can't map VRAM and doesn't understand NVIDIA block-linear layouts) aquamarine falls
++// back to glReadPixels + glTexImage2D, which costs several ms of CPU per frame.
++//
++// This class goes the other way round: the primary GPU's Vulkan device imports the secondary's
++// (system memory, linear) scanout buffer and copies into it with its own copy engine. No CPU
++// touches the pixels. Synchronisation is explicit: the compositor's render fence is imported as a
++// wait semaphore and the copy signals a sync_file that the KMS commit waits on.
++
++#include <aquamarine/buffer/Buffer.hpp>
++#include <aquamarine/backend/Backend.hpp>
++#include <hyprutils/memory/SharedPtr.hpp>
++#include <hyprutils/memory/WeakPtr.hpp>
++#include <hyprutils/math/Region.hpp>
++#include <cstdint>
++#include <map>
++#include <optional>
++#include <string>
++#include <vector>
++
++#ifdef AQUAMARINE_HAS_VULKAN
++#define VK_NO_PROTOTYPES
++#include <vulkan/vulkan.h>
++#endif
++
++namespace Aquamarine {
++    class CVulkanCopier;
++
++#ifdef AQUAMARINE_HAS_VULKAN
++    // Per-buffer cached VkImage import.
++    class CVulkanImageAttachment : public IAttachment {
++      public:
++        CVulkanImageAttachment(Hyprutils::Memory::CWeakPointer<CVulkanCopier> copier_, VkImage image_, VkDeviceMemory memory_, bool source_);
++        virtual ~CVulkanImageAttachment();
++
++        Hyprutils::Memory::CWeakPointer<CVulkanCopier> copier;
++        VkImage                                        image      = VK_NULL_HANDLE;
++        VkDeviceMemory                                 memory     = VK_NULL_HANDLE;
++        bool                                           source     = false;
++        bool                                           everCopied = false; // dst: first copy may transition from UNDEFINED
++
++        // Destinations only: the part of this image that is out of date with respect to the
++        // compositor's latest frame. A destination is written every few frames (the secondary
++        // swapchain rotates), so every frame's damage has to accumulate on all the others.
++        // Starts as the whole image: the first copy into a fresh buffer must be complete.
++        Hyprutils::Math::CRegion                       stale;
++
++        // the copy this image was last written by, so a new copy into it can be ordered after it.
++        // Vulkan gives no implicit ordering between separate submissions to the same queue.
++        size_t                                         lastSlot   = SIZE_MAX;
++        uint64_t                                       lastCopyID = 0;
++
++        // The first copy into a freshly imported destination has been observed not to land
++        // completely (scattered pixels keep their pre-copy contents) even though its fence
++        // signals; a second copy always fixes it. Repeat full copies until we trust the buffer.
++        int                                            fullCopiesLeft = 2;
++    };
++#endif
++
++    class CVulkanCopier {
++      public:
++        // Creates a copier on the Vulkan physical device that corresponds to drmFD. Returns null
++        // if Vulkan isn't available, the device can't be matched, or a required extension is
++        // missing. Never throws.
++        static Hyprutils::Memory::CSharedPointer<CVulkanCopier> attempt(Hyprutils::Memory::CSharedPointer<CBackend> backend, int drmFD);
++        ~CVulkanCopier();
++
++        // DRM modifiers this device can import via dma-buf for the given fourcc as a copy
++        // source (asSource) or destination.
++        std::vector<uint64_t> importableModifiers(uint32_t fourcc, bool asSource);
++
++        // Can `from` be copied into `to` on this device? Checks formats, sizes, planes, modifiers.
++        bool canCopy(Hyprutils::Memory::CSharedPointer<IBuffer> from, Hyprutils::Memory::CSharedPointer<IBuffer> to);
++
++        struct SResult {
++            bool success = false;
++            // sync_file that signals when the copy is done. Owned by the copier, valid until the
++            // copier is destroyed or a few more copies have been issued. Dup it if you need to keep it.
++            int syncFD = -1;
++        };
++
++        // Copy `from` into `to`, waiting for `waitFD` (a sync_file, may be -1) on the GPU first.
++        // `damage` (in destination pixel coordinates) is what changed in `from` since the previous
++        // frame; the copier tracks per-destination staleness and copies only what that buffer
++        // needs. Pass nullptr when the damage isn't known: that forces a full copy.
++        SResult                                        copy(Hyprutils::Memory::CSharedPointer<IBuffer> from, Hyprutils::Memory::CSharedPointer<IBuffer> to, int waitFD,
++                                                            const Hyprutils::Math::CRegion* damage = nullptr);
++
++        bool                                           healthy() const;
++
++        Hyprutils::Memory::CWeakPointer<CVulkanCopier> self;
++        std::string                                    deviceName;
++
++#ifdef AQUAMARINE_HAS_VULKAN
++      private:
++        CVulkanCopier() = default;
++
++        bool                                     init(int drmFD);
++        bool                                     loadLoader();
++        bool                                     pickPhysicalDevice(int drmFD);
++        bool                                     createDevice();
++        bool                                     createSlots();
++        void                                     destroySlots();
++
++        Hyprutils::Memory::CSharedPointer<CVulkanImageAttachment> importBuffer(Hyprutils::Memory::CSharedPointer<IBuffer> buf, bool asSource);
++        void                                     destroyImage(VkImage image, VkDeviceMemory memory);
++        std::optional<VkFormat>                  vkFormat(uint32_t fourcc);
++        bool                                     modifierImportable(VkFormat format, uint64_t modifier, VkImageUsageFlags usage);
++
++        void                                     log(eBackendLogLevel level, const std::string& msg);
++
++        Hyprutils::Memory::CWeakPointer<CBackend> backend;
++
++        void*                                    loaderHandle = nullptr;
++        VkInstance                               instance     = VK_NULL_HANDLE;
++        VkPhysicalDevice                         physical     = VK_NULL_HANDLE;
++        VkDevice                                 device       = VK_NULL_HANDLE;
++        VkQueue                                  queue        = VK_NULL_HANDLE;
++        uint32_t                                 queueFamily  = UINT32_MAX;
++        VkCommandPool                            commandPool  = VK_NULL_HANDLE;
++        VkPhysicalDeviceMemoryProperties         memoryProps{};
++
++        struct SSlot {
++            VkCommandBuffer cmd       = VK_NULL_HANDLE;
++            VkFence         fence     = VK_NULL_HANDLE;
++            VkSemaphore     signalSem = VK_NULL_HANDLE; // exportable as sync_file
++            VkSemaphore     waitSem   = VK_NULL_HANDLE; // gets a temporary sync_file import
++            int             lastFD    = -1;
++            bool            pending   = false;
++            uint64_t        copyID    = 0; // which copy this slot is currently running
++        };
++        static constexpr size_t SLOTS = 4;
++        std::vector<SSlot>      slots;
++        size_t                  nextSlot        = 0;
++        int                     failures        = 0;
++        bool                    broken          = false;
++        bool                    fenceProven     = false; // a copy fence was observed to signal in this process
++        bool                    debug           = false; // AQ_MGPU_VK_DEBUG: mirror logs to stderr (journal)
++        uint64_t                copies          = 0;
++
++        // waits (bounded) for every pending slot; returns false if something never finished
++        bool                    drainPending(uint64_t timeoutNs);
++
++        // every live destination import, for propagating each frame's damage to the buffers that
++        // are not being written this frame. Pruned lazily.
++        std::vector<Hyprutils::Memory::CWeakPointer<CVulkanImageAttachment>> destinations;
++
++        // A region with more rectangles than this is copied as its bounding box instead. The copy
++        // engine handles many small regions fine; the cap only exists so a pathological region
++        // can't turn one copy into thousands of tiny transfers.
++        static constexpr size_t MAX_COPY_RECTS = 64;
++
++        std::map<std::pair<uint32_t, bool>, std::vector<uint64_t>> modifierCache;
++
++        struct {
++            PFN_vkGetInstanceProcAddr                           vkGetInstanceProcAddr                           = nullptr;
++            PFN_vkCreateInstance                                vkCreateInstance                                = nullptr;
++            PFN_vkDestroyInstance                               vkDestroyInstance                               = nullptr;
++            PFN_vkEnumeratePhysicalDevices                      vkEnumeratePhysicalDevices                      = nullptr;
++            PFN_vkGetPhysicalDeviceProperties2                  vkGetPhysicalDeviceProperties2                  = nullptr;
++            PFN_vkGetPhysicalDeviceQueueFamilyProperties        vkGetPhysicalDeviceQueueFamilyProperties        = nullptr;
++            PFN_vkGetPhysicalDeviceMemoryProperties             vkGetPhysicalDeviceMemoryProperties             = nullptr;
++            PFN_vkEnumerateDeviceExtensionProperties            vkEnumerateDeviceExtensionProperties            = nullptr;
++            PFN_vkGetPhysicalDeviceFormatProperties2            vkGetPhysicalDeviceFormatProperties2            = nullptr;
++            PFN_vkGetPhysicalDeviceImageFormatProperties2       vkGetPhysicalDeviceImageFormatProperties2       = nullptr;
++            PFN_vkGetPhysicalDeviceExternalSemaphoreProperties  vkGetPhysicalDeviceExternalSemaphoreProperties  = nullptr;
++            PFN_vkCreateDevice                                  vkCreateDevice                                  = nullptr;
++            PFN_vkDestroyDevice                                 vkDestroyDevice                                 = nullptr;
++            PFN_vkGetDeviceProcAddr                             vkGetDeviceProcAddr                             = nullptr;
++            PFN_vkGetDeviceQueue                                vkGetDeviceQueue                                = nullptr;
++            PFN_vkDeviceWaitIdle                                vkDeviceWaitIdle                                = nullptr;
++            PFN_vkCreateCommandPool                             vkCreateCommandPool                             = nullptr;
++            PFN_vkDestroyCommandPool                            vkDestroyCommandPool                            = nullptr;
++            PFN_vkAllocateCommandBuffers                        vkAllocateCommandBuffers                        = nullptr;
++            PFN_vkResetCommandBuffer                            vkResetCommandBuffer                            = nullptr;
++            PFN_vkBeginCommandBuffer                            vkBeginCommandBuffer                            = nullptr;
++            PFN_vkEndCommandBuffer                              vkEndCommandBuffer                              = nullptr;
++            PFN_vkCmdPipelineBarrier                            vkCmdPipelineBarrier                            = nullptr;
++            PFN_vkCmdCopyImage                                  vkCmdCopyImage                                  = nullptr;
++            PFN_vkQueueSubmit                                   vkQueueSubmit                                   = nullptr;
++            PFN_vkCreateFence                                   vkCreateFence                                   = nullptr;
++            PFN_vkDestroyFence                                  vkDestroyFence                                  = nullptr;
++            PFN_vkWaitForFences                                 vkWaitForFences                                 = nullptr;
++            PFN_vkResetFences                                   vkResetFences                                   = nullptr;
++            PFN_vkGetFenceStatus                                vkGetFenceStatus                                = nullptr;
++            PFN_vkCreateSemaphore                               vkCreateSemaphore                               = nullptr;
++            PFN_vkDestroySemaphore                              vkDestroySemaphore                              = nullptr;
++            PFN_vkGetSemaphoreFdKHR                             vkGetSemaphoreFdKHR                             = nullptr;
++            PFN_vkImportSemaphoreFdKHR                          vkImportSemaphoreFdKHR                          = nullptr;
++            PFN_vkCreateImage                                   vkCreateImage                                   = nullptr;
++            PFN_vkDestroyImage                                  vkDestroyImage                                  = nullptr;
++            PFN_vkGetImageMemoryRequirements2                   vkGetImageMemoryRequirements2                   = nullptr;
++            PFN_vkGetMemoryFdPropertiesKHR                      vkGetMemoryFdPropertiesKHR                      = nullptr;
++            PFN_vkAllocateMemory                                vkAllocateMemory                                = nullptr;
++            PFN_vkFreeMemory                                    vkFreeMemory                                    = nullptr;
++            PFN_vkBindImageMemory                               vkBindImageMemory                               = nullptr;
++        } fn;
++
++        friend class CVulkanImageAttachment;
++#endif
++    };
++};

@@ -1,0 +1,703 @@
+Welcome to Hyprland!
+
+                                                  
+                     YY    UJ                     
+                    YYY    UUJ                    
+                   XXXY    UUUU                   
+                  zXXXX    UUUUU                  
+                zzzzX        UUUUJ                
+               cczzz          UUUUJ               
+             vccccz            UUUUUJ             
+            vvcccc              UUUUUJ            
+           vvvvv                  UUUUJ           
+          uuuvv                    UUUUJ          
+         uuuuu                      UUUUU         
+        nnnuu                        UUUUU        
+       nnnnn                          YUUUU       
+       xxnn                            YUUU       
+       xxxn                            YYUU       
+      xxxx                              YYUU      
+      rxxx                              YYYY      
+      rrrx                              YYYY      
+       rrrx                            XXXY       
+       rrrr                            XXXX       
+        rrrr                          zzXX        
+         rrrr                        zzzz         
+          rrrrr                    ccczz          
+           rrrrrx                vccccc           
+             rrrrxxxx        uuvvvvvc             
+                rrxxxxxxnnnnuuuuuv                
+                    xxxxxnnnnu                    
+
+
+
+DEBUG ]: Old rlimit: soft -> 2048, hard -> 2097152
+DEBUG ]: New rlimit: soft -> 2097152, hard -> 2097152
+WARN ]: WARNING: Hyprland is being launched without start-hyprland. This is highly advised against.
+DEBUG ]: Creating the EventLoopManager!
+DEBUG ]: Creating the KeybindManager!
+DEBUG ]: Creating the AnimationManager!
+DEBUG ]: Creating the DynamicPermissionManager!
+DEBUG ]: Creating the MonitorState!
+DEBUG ]: Creating the WorkspaceState!
+DEBUG ]: Creating the ConfigManager!
+DEBUG ]: [cfg] Regular config at /home/andarriel/.config/hypr/hyprland.lua
+DEBUG ]: [cfg] Using lua config found at /home/andarriel/.config/hypr/hyprland.lua
+DEBUG ]: Creating the Error Overlay!
+DEBUG ]: Creating the LayoutManager!
+DEBUG ]: Creating the TokenManager!
+DEBUG ]: Creating the EventManager!
+DEBUG ]: Disabling stdout logs (debug.enable_stdout_logs = 0). Further logs will be written to /run/user/1000/hypr/efb50993780079460b0cbed1363e2166a2de1d9f_1788614320_1490092282/hyprland.log
+DEBUG ]: Creating the PointerManager!
+DEBUG ]: Creating the AsyncResourceGatherer!
+[aq-vk] vulkan: creating copier for drm fd 19
+[aq-vk] vulkan: init: loading libvulkan
+[aq-vk] vulkan: init: creating instance
+[aq-vk] vulkan: init: instance created, picking device
+[aq-vk] vulkan: init: enumerating physical devices
+[aq-vk] vulkan: init: device picked, creating logical device
+[aq-vk] vulkan: init: logical device created
+[aq-vk] GBM alloc: 2560x1600 fmt 0x34325258 scanout 1 cursor 0 multigpu 1 -> 6 vk source mods, 8 explicit mods
+[aq-vk] GBM allocated modifier 0x300000000606014
+[aq-vk] GBM alloc: 2560x1600 fmt 0x34325258 scanout 1 cursor 0 multigpu 1 -> 6 vk source mods, 8 explicit mods
+[aq-vk] GBM allocated modifier 0x300000000606014
+[aq-vk] GBM alloc: 2560x1600 fmt 0x34325258 scanout 1 cursor 0 multigpu 1 -> 6 vk source mods, 8 explicit mods
+[aq-vk] GBM allocated modifier 0x300000000606014
+[aq-vk] GBM alloc: 2560x1600 fmt 0x34325258 scanout 1 cursor 0 multigpu 0 -> 0 vk source mods, 1 explicit mods
+[aq-vk] GBM allocated modifier 0x0
+[aq-vk] GBM alloc: 2560x1600 fmt 0x34325258 scanout 1 cursor 0 multigpu 0 -> 0 vk source mods, 1 explicit mods
+[aq-vk] GBM allocated modifier 0x0
+[aq-vk] GBM alloc: 2560x1600 fmt 0x34325258 scanout 1 cursor 0 multigpu 0 -> 0 vk source mods, 1 explicit mods
+[aq-vk] GBM allocated modifier 0x0
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: first copy fence signalled, copy engine path is live
+[aq-vk] vulkan: copy #1 submitted (wait fd -1, signal fd 110)
+[aq-vk] blit: copy ok fence 110
+[aq-vk] GBM alloc: 256x256 fmt 0x34325241 scanout 1 cursor 1 multigpu 0 -> 0 vk source mods, 1 explicit mods
+[aq-vk] GBM allocated modifier 0x0
+[aq-vk] GBM alloc: 256x256 fmt 0x34325241 scanout 1 cursor 1 multigpu 0 -> 0 vk source mods, 1 explicit mods
+[aq-vk] GBM allocated modifier 0x0
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x0, dst mod 0x0)
+[aq-vk] vulkan: copy #2 submitted (wait fd -1, signal fd 114)
+[aq-vk] blit: copy ok fence 114
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #3 submitted (wait fd 116, signal fd 158)
+[aq-vk] blit: copy ok fence 158
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #4 submitted (wait fd 118, signal fd 163)
+[aq-vk] blit: copy ok fence 163
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #5 submitted (wait fd 118, signal fd 162)
+[aq-vk] blit: copy ok fence 162
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #6 submitted (wait fd 110, signal fd 159)
+[aq-vk] blit: copy ok fence 159
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #7 submitted (wait fd 118, signal fd 164)
+[aq-vk] blit: copy ok fence 164
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #8 submitted (wait fd 118, signal fd 166)
+[aq-vk] blit: copy ok fence 166
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #9 submitted (wait fd 118, signal fd 163)
+[aq-vk] blit: copy ok fence 163
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #10 submitted (wait fd 118, signal fd 162)
+[aq-vk] blit: copy ok fence 162
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #11 submitted (wait fd 118, signal fd 164)
+[aq-vk] blit: copy ok fence 164
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #12 submitted (wait fd 118, signal fd 166)
+[aq-vk] blit: copy ok fence 166
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #13 submitted (wait fd 118, signal fd 163)
+[aq-vk] blit: copy ok fence 163
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #14 submitted (wait fd 118, signal fd 162)
+[aq-vk] blit: copy ok fence 162
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #15 submitted (wait fd 118, signal fd 164)
+[aq-vk] blit: copy ok fence 164
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #16 submitted (wait fd 158, signal fd 168)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #17 submitted (wait fd 158, signal fd 167)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #18 submitted (wait fd 158, signal fd 169)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #19 submitted (wait fd 158, signal fd 166)
+[aq-vk] blit: copy ok fence 166
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] vulkan: copy #20 submitted (wait fd 158, signal fd 168)
+[aq-vk] blit: copy ok fence 168
+The XKEYBOARD keymap compiler (xkbcomp) reports:
+> Warning:          Multiple symbols for level 1/group 1 on key <FK23>
+>                   Using F23, ignoring XF86TouchpadOff
+> Warning:          Symbol map for key <FK23> redefined
+>                   Using last definition for conflicting fields
+> Warning:          Symbol map for key <FK24> redefined
+>                   Using last definition for conflicting fields
+> Warning:          Could not resolve keysym XF86ElectronicPrivacyScreenOn
+> Warning:          Could not resolve keysym XF86ElectronicPrivacyScreenOff
+> Warning:          Could not resolve keysym XF86ActionOnSelection
+> Warning:          Could not resolve keysym XF86ContextualInsert
+> Warning:          Could not resolve keysym XF86ContextualQuery
+Errors from xkbcomp are not fatal to the X server
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+The XKEYBOARD keymap compiler (xkbcomp) reports:
+> Warning:          Unsupported maximum keycode 709, clipping.
+>                   X11 cannot support keycodes above 255.
+> Warning:          Virtual modifier Hyper multiply defined
+>                   Using 0, ignoring 0
+> Warning:          Virtual modifier ScrollLock multiply defined
+>                   Using 0, ignoring 0
+Errors from xkbcomp are not fatal to the X server
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 164
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 166
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 167
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 168
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 171
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 172
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 171
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 172
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 171
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 172
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 171
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 172
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 171
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 172
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 171
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 172
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 170
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 169
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 171
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 172
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 173
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 176
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 175
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 174
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 173
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 176
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 175
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 174
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 173
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 176
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 175
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 177
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 181
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 179
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 178
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 177
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 180
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 182
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 186
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 179
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 180
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 182
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 185
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 183
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 187
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 182
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 185
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 183
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 190
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+
+... [807095 lines trimmed: the run logged every copy-engine copy; the pattern repeats] ...
+
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 296
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 274
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 271
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 266
+[aq-vk] blit: copier present, canCopy 1 (src mod 0x300000000606014, dst mod 0x0)
+[aq-vk] blit: copy ok fence 270

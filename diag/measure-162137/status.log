@@ -1,0 +1,38 @@
+lib: a1ffbf7bf1a7a7c3426fb146be132c76  /usr/lib/libaquamarine.so.0.15.0
+Hyprland pid 5613, uptime     177s
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import json,sys; print([c["class"] for c in json.load(sys.stdin)])
+                                                ~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.14/json/__init__.py", line 298, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.14/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.14/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+clients: 
+--- top (5 samples, 2s apart):
+   5613 andarri+  -2   0 2494832 349012 242232 S   0.0   2.5   0:09.53 Hyprland
+   5613 andarri+  -2   0 2494832 349012 242232 S   0.0   2.5   0:09.53 Hyprland
+   5613 andarri+  -2   0 2494832 349012 242232 S   1.0   2.5   0:09.55 Hyprland
+   5613 andarri+  -2   0 2494832 349012 242232 S   0.0   2.5   0:09.55 Hyprland
+   5613 andarri+  -2   0 2494832 349012 242232 S   0.0   2.5   0:09.55 Hyprland
+--- utime/stime over 10 s:
+before utime 718 stime 237
+after  utime 799 stime 270
+--- irq rates over 5 s:
+149: nvidia 150: i915 
+before: nvidia 141699
+i915 74028
+after:  nvidia 141946
+i915 74202
+--- 16MB anon mappings: 2
+samples=3 lost=0

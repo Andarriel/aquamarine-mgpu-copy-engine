@@ -1,0 +1,65 @@
+# Maintainer: Andarriel
+# Based on the Arch Linux aquamarine package by Caleb Maclennan <caleb@alerque.com>
+#
+# aquamarine + the multi-GPU Vulkan copy-engine patch. Replaces the distro `aquamarine`
+# so that a `pacman -Syu` cannot silently restore the slow CPU-readback blit path.
+# See ../README.md for what the patch does and why.
+
+pkgname=aquamarine-mgpu
+_pkgname=aquamarine
+pkgver=0.15.0
+pkgrel=1
+pkgdesc='a very light linux rendering backend library (with the multi-GPU Vulkan copy-engine patch)'
+arch=(x86_64 aarch64)
+url="https://github.com/hyprwm/$_pkgname"
+license=(BSD-3-Clause)
+depends=(libgcc
+         libstdc++
+         glibc # libc.so libm.so
+         hyprutils libhyprutils.so
+         libdisplay-info libdisplay-info.so
+         libdrm # libdrm.so
+         libglvnd libEGL.so
+         libinput # libinput.so
+         mesa # libgbm.so
+         opengl-driver
+         pixman
+         seatd libseat.so
+         systemd-libs libudev.so
+         vulkan-icd-loader # libvulkan.so.1, dlopen'd by the copy engine
+         wayland libwayland-client.so
+         wayland-protocols)
+makedepends=(cmake
+             hyprwayland-scanner
+             vulkan-headers) # enables the copy-engine path at build time
+provides=("$_pkgname=$pkgver" libaquamarine.so)
+conflicts=("$_pkgname")
+_archive="$_pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz"
+        'aquamarine-mgpu-copy-engine.patch')
+sha256sums=('bb5323f58cd2f379cb11c39893336e49980fe2e9fb101745addd87cebde3d13d'
+            'SKIP')
+
+prepare() {
+	cd "$_archive"
+	patch -Np1 -i "$srcdir/aquamarine-mgpu-copy-engine.patch"
+}
+
+build() {
+	cd "$_archive"
+	cmake -B build \
+		-D CMAKE_INSTALL_PREFIX=/usr \
+		-D CMAKE_BUILD_TYPE=Release
+	cmake --build build
+	# fail loudly if the copy-engine path silently compiled out (only the stub has this string)
+	if strings "build/lib$_pkgname.so.$pkgver" | grep -q 'built without Vulkan support'; then
+		echo "ERROR: built without the Vulkan copy engine (vulkan-headers missing?)" >&2
+		exit 1
+	fi
+}
+
+package() {
+	cd "$_archive"
+	DESTDIR="$pkgdir" cmake --install build
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

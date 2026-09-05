@@ -1,0 +1,58 @@
+GPU 0: Intel(R) Graphics (RPL-S) (vendor 0x8086) driver 26.2.2
+GPU 1: NVIDIA GeForce RTX 4060 Laptop GPU (vendor 0x10de) driver 610.228.256
+  ext VK_KHR_external_memory_fd              yes
+  ext VK_EXT_external_memory_dma_buf         yes
+  ext VK_EXT_image_drm_format_modifier       yes
+  ext VK_KHR_external_semaphore_fd           yes
+  ext VK_KHR_external_fence_fd               yes
+  ext VK_EXT_queue_family_foreign            yes
+  ext VK_EXT_physical_device_drm             yes
+  ext VK_KHR_image_format_list               yes
+  ext VK_KHR_external_memory                 yes
+  ext VK_KHR_external_semaphore              yes
+  ext VK_KHR_external_fence                  yes
+  ext VK_KHR_dedicated_allocation            yes
+  ext VK_KHR_get_memory_requirements2        yes
+  ext VK_EXT_external_memory_host            yes
+  semaphore SYNC_FD: features=0x3 [EXPORT IMPORT ]
+  fence SYNC_FD: features=0x3 [EXPORT IMPORT ]
+  queue family 0: flags 0xf count 16
+  queue family 1: flags 0xc count 2
+  queue family 2: flags 0xe count 8
+  queue family 3: flags 0x2c count 1
+  queue family 4: flags 0x4c count 1
+  queue family 5: flags 0x10c count 1
+  using queue family 1
+
+Intel bo: stride 10240 modifier 0x0 fd 43
+
+== NVIDIA Vulkan: query import support ==
+  [linear as TRANSFER_DST] modifier 0x0 usage 0x2: SUPPORTED, features=0x6 [IMPORTABLE EXPORTABLE ] max 32768x32768
+  [linear as TRANSFER_SRC|DST] modifier 0x0 usage 0x3: SUPPORTED, features=0x6 [IMPORTABLE EXPORTABLE ] max 32768x32768
+  [linear as COLOR_ATTACHMENT] modifier 0x0 usage 0x10: SUPPORTED, features=0x6 [IMPORTABLE EXPORTABLE ] max 32768x32768
+
+== import Intel linear dma-buf into NVIDIA Vulkan as TRANSFER_DST ==
+  fd memoryTypeBits=0x9 image bits=0xf -> memtype 0 flags=0x0 [] heap 1 (10256 MB); req size 16384000, dedicated pref=0 req=0
+  import OK
+
+== NVIDIA GBM buffer (what aquamarine renders into) ==
+  NVIDIA Vulkan B8G8R8A8 modifiers (7): 0x300000000606015(feat 0x1dd83) 0x300000000606014(feat 0x1dd83) 0x300000000606013(feat 0x1dd83) 0x300000000606012(feat 0x1dd83) 0x300000000606011(feat 0x1dd83) 0x300000000606010(feat 0x1dd83) 0x0(feat 0x1dd03)
+  gbm_bo_create_with_modifiers2(vulkan modifier list, RENDERING): OK
+  nvidia bo: modifier 0x300000000606014 stride 10240 offset 0 fd 45
+  [nvidia bo modifier as TRANSFER_SRC] modifier 0x300000000606014 usage 0x1: SUPPORTED, features=0x7 [IMPORTABLE EXPORTABLE DEDICATED_ONLY ] max 32768x32768
+  fd memoryTypeBits=0x3 image bits=0x3 -> memtype 0 flags=0x0 [] heap 1 (10256 MB); req size 17039360, dedicated pref=0 req=0
+  import OK
+
+== copy test ==
+  copy 2560x1600 XRGB8888 NVIDIA->Intel sysmem: best wall 2.018 ms, avg CPU 0.699 ms per copy (incl. fence wait)
+  Intel CPU view: [0,0]=0xff336699 [mid]=0xff336699 [last]=0x00000000  (expected 0x??336699) -> WRONG
+
+== sync_file semaphore export/import ==
+  create exportable SYNC_FD semaphore: 0
+  vkGetSemaphoreFdKHR: 0 fd=48 (submit+export 0.060 ms)
+  sync_file signalled after 1.555 ms (poll=1)
+  vkImportSemaphoreFdKHR(sync_file, TEMPORARY): 0
+  submit B waiting on imported semaphore: fence wait -> 0 (0=ok)
+  import of already-signalled sync_file: 0
+
+DONE

@@ -1,0 +1,65 @@
+total samples: 8787
+
+== by library ==
+  46.4%  libnvidia-eglcore.so.610.57.04
+  19.9%  Hyprland
+  15.0%  libc.so.6
+   2.9%  libhyprutils.so.0.14.1
+   2.5%  libaquamarine.so.0.15.0
+   2.5%  libpixman-1.so.0.46.4
+   2.3%  libwayland-server.so.0.26.0
+   2.2%  libEGL_nvidia.so.610.57.04
+   1.7%  libstdc++.so.6.0.36
+   1.5%  libnvidia-glsi.so.610.57.04
+   0.6%  ld-linux-x86-64.so.2
+   0.5%  libGLESv2.so.2.1.0
+   0.5%  libffi.so.8.5.0
+   0.4%  [vdso]
+   0.3%  libm.so.6
+
+== by function (self) ==
+  20.7%  libnvidia-eglcore.so.610.57.04 NvGlEglGetFunctions
+   4.6%  libnvidia-eglcore.so.610.57.04 _glDeterministicTPCModeDistParams
+   2.9%  libc.so.6                    pthread_mutex_trylock@GLIBC_2.2.5
+   2.4%  libc.so.6                    pthread_mutex_init@@GLIBC_2.2.5
+   1.9%  libEGL_nvidia.so.610.57.04   NvEglwlaf47906in
+   1.5%  libc.so.6                    memcpy@GLIBC_2.2.5
+   1.3%  libpixman-1.so.0.46.4        pixman_image_set_clip_region32
+   1.2%  libc.so.6                    __default_morecore@GLIBC_2.2.5
+   0.9%  libc.so.6                    malloc@@GLIBC_2.2.5
+   0.8%  libc.so.6                    sem_trywait@GLIBC_2.2.5
+   0.7%  libc.so.6                    free@@GLIBC_2.2.5
+   0.6%  ld-linux-x86-64.so.2         __tls_get_addr@@GLIBC_2.3
+   0.6%  libc.so.6                    pthread_mutex_lock@@GLIBC_2.2.5
+   0.5%  Hyprland                     CConfigValue<long>::operator*() const
+   0.5%  libwayland-server.so.0.26.0  wl_client_destroy
+   0.5%  libc.so.6                    pthread_self@@GLIBC_2.2.5
+   0.4%  Hyprland                     Render::GL::CHyprOpenGLImpl::renderToFBInternal(Hyprutils::Memory::CSharedPointer<Render::ITexture>, Render::G
+   0.4%  libhyprutils.so.0.14.1       Hyprutils::Signal::CSignalBase::emitInternal(void*)
+   0.3%  Hyprland                     Render::GL::CHyprOpenGLImpl::getShaderVariant(Render::ePreparedFragmentShader, unsigned short)
+   0.3%  libpixman-1.so.0.46.4        pixman_region32_copy
+   0.3%  Hyprland                     Render::IHyprRenderer::renderLayer(Hyprutils::Memory::CSharedPointer<Desktop::View::CLayerSurface>, Hyprutils:
+   0.3%  libhyprutils.so.0.14.1       Hyprutils::Math::CRegion::~CRegion()
+   0.3%  Hyprland                     CDRMSyncobjTimelineResource::fromResource(wl_resource*)
+   0.3%  libnvidia-eglcore.so.610.57.04 +0x708861
+   0.3%  libc.so.6                    ioctl@@GLIBC_2.2.5
+   0.3%  libstdc++.so.6.0.36          __dynamic_cast@@CXXABI_1.3
+   0.3%  Hyprland                     Render::IHyprRenderer::renderAllClientsForWorkspace(Hyprutils::Memory::CSharedPointer<Monitor::CMonitor>, Hypr
+   0.3%  libc.so.6                    calloc@@GLIBC_2.2.5
+   0.3%  Hyprland                     CWLSurfaceResource::bfHelper(std::span<Hyprutils::Memory::CSharedPointer<CWLSurfaceResource> const, 1844674407
+   0.3%  libc.so.6                    pthread_equal@@GLIBC_2.2.5
+   0.2%  Hyprland                     CWLSurfaceResource::commitState(SSurfaceState&)
+   0.2%  Hyprland                     Render::IHyprRenderer::renderSessionLockMissing(Hyprutils::Memory::CSharedPointer<Monitor::CMonitor>)
+   0.2%  libc.so.6                    vfprintf@@GLIBC_2.2.5
+   0.2%  libc.so.6                    close@@GLIBC_2.2.5
+   0.2%  libpixman-1.so.0.46.4        pixman_region32_fini
+   0.2%  Hyprland                     Render::IHyprRenderer::renderWindow(Hyprutils::Memory::CSharedPointer<Desktop::View::CWindow>, Hyprutils::Memo
+   0.2%  Hyprland                     Render::GL::CHyprGLRenderer::endRender(std::function<void ()> const&)
+   0.2%  Hyprland                     Render::GL::CHyprOpenGLImpl::scissor(pixman_box32 const*, bool)
+   0.2%  libc.so.6                    pthread_mutex_unlock@@GLIBC_2.2.5
+   0.2%  libaquamarine.so.0.15.0      Aquamarine::CDRMOutput::commitState(bool)
+   0.2%  Hyprland                     Render::IElementRenderer::drawSurface(Hyprutils::Memory::CWeakPointer<CSurfacePassElement>, Hyprutils::Math::C
+   0.2%  Hyprland                     Fullscreen::CFullscreenController::getFsHandlersForWorkspace(Hyprutils::Memory::CSharedPointer<CWorkspace>) co
+   0.2%  libc.so.6                    __isoc23_strtoll@@GLIBC_2.38
+   0.2%  Hyprland                     Monitor::CMonitor::resources()
+   0.2%  Hyprland                     Render::IHyprRenderer::renderMonitor(Hyprutils::Memory::CSharedPointer<Monitor::CMonitor>, bool)

@@ -1,0 +1,9 @@
+total samples: 3
+
+== by library ==
+  66.7%  libwayland-server.so.0.26.0
+  33.3%  libc.so.6
+
+== by function (self) ==
+  66.7%  libwayland-server.so.0.26.0  wl_client_destroy
+  33.3%  libc.so.6                    calloc@@GLIBC_2.2.5
